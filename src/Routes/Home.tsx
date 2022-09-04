@@ -28,7 +28,7 @@ const Content = styled.div``;
 const ContentTitle = styled.h1`
   font-size: 40px;
   font-weight: 600;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 `;
 
 function Home() {

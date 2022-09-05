@@ -34,11 +34,7 @@ const ContentTitle = styled.h1`
 function Home() {
   const { type } = useParams();
   const navigate = useNavigate();
-  useEffect(() => {
-    if (type === undefined) {
-      navigate(`/${"헬스"}`);
-    }
-  }, []);
+
   return (
     <Wrap>
       <Contents>

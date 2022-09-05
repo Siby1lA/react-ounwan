@@ -1,7 +1,11 @@
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-
+import { authService, dbService } from "../../firebase";
+import md5 from "md5";
+import { ref, set } from "firebase/database";
 const Wrap = styled.div`
   width: 100%;
   display: flex;
@@ -64,18 +68,44 @@ interface IForm {
 }
 function Register() {
   const navigate = useNavigate();
+  const [ladoing, setLoading] = useState(false);
+  const [errorFromSubmit, setErrorFromSubmit] = useState("");
   const {
     register,
     formState: { errors },
     handleSubmit,
     watch,
   } = useForm<IForm>();
-  const onSubmit = ({
-    email,
-    nickname,
-    password,
-    password_confirm,
-  }: IForm) => {};
+  const onSubmit = async (data: IForm) => {
+    try {
+      setLoading(true);
+      // 회원가입 요청
+      const createdUser: any = await createUserWithEmailAndPassword(
+        authService,
+        data.email,
+        data.password
+      );
+      // 유저 기초 정보 세팅
+      await updateProfile(authService.currentUser, {
+        displayName: data.nickname,
+        photoURL: `http://gravatar.com/avatar/${md5(
+          createdUser.user.email
+        )}?d=identicon`,
+      });
+
+      //db에 저장
+      set(ref(dbService, `users/${createdUser.user.uid}`), {
+        nickname: createdUser.user.displayName,
+        image: createdUser.user.photoURL,
+      });
+    } catch (error: any) {
+      setErrorFromSubmit(error.message);
+      setLoading(false);
+      setTimeout(() => {
+        setErrorFromSubmit("");
+      }, 5000);
+    }
+  };
   return (
     <Wrap>
       <Header>회원가입</Header>
@@ -124,6 +154,7 @@ function Register() {
             errors.password_confirm.type === "validate" && (
               <p>비밀번호가 일치하지 않습니다.</p>
             )}
+          {errorFromSubmit && <p>{errorFromSubmit}</p>}
           <button>로그인</button>
         </form>
       </Box>

@@ -1,6 +1,14 @@
+import {
+  FacebookAuthProvider,
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+} from "firebase/auth";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { authService } from "../../firebase";
 
 const Wrap = styled.div`
   width: 100%;
@@ -56,9 +64,10 @@ const Footer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  div:nth-child(2) {
+  div:first-child {
     display: flex;
     flex-direction: column;
+    margin-top: 30px;
     button {
       width: 330px;
       :first-child {
@@ -71,12 +80,7 @@ const Footer = styled.div`
     }
   }
 `;
-const Line = styled.div`
-  width: 450px;
-  height: 2px;
-  background-color: #616161;
-  margin: 30px;
-`;
+
 const Create = styled.div`
   position: absolute;
   right: 0;
@@ -94,7 +98,34 @@ interface IForm {
 function Login() {
   const navigate = useNavigate();
   const { register, handleSubmit, watch } = useForm<IForm>();
-  const onSubmit = ({ email, password }: IForm) => {};
+  const [errorFromSubmit, setErrorFromSubmit] = useState("");
+  const [loading, setLoading] = useState(false);
+  const onSubmit = async (data: IForm) => {
+    try {
+      setLoading(true);
+      await signInWithEmailAndPassword(authService, data.email, data.password);
+      setLoading(false);
+    } catch (error: any) {
+      setErrorFromSubmit(error.message);
+      setLoading(false);
+      setTimeout(() => {
+        setErrorFromSubmit("");
+      }, 5000);
+    }
+  };
+  const onSosicalLogin = async (event: any) => {
+    const {
+      target: { name },
+    } = event;
+    if (name === "google") {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(authService, provider);
+      navigate("/헬스");
+    } else if (name === "facebook") {
+      const provider = new FacebookAuthProvider();
+      await signInWithPopup(authService, provider);
+    }
+  };
   return (
     <Wrap>
       <Header>로그인</Header>
@@ -109,10 +140,13 @@ function Login() {
         <Create onClick={() => navigate(`/register`)}>회원가입...</Create>
       </Box>
       <Footer>
-        <Line></Line>
         <div>
-          <button>구글 로그인</button>
-          <button>페이스북 로그인</button>
+          <button name="google" onClick={onSosicalLogin}>
+            구글 로그인
+          </button>
+          <button name="facebook" onClick={onSosicalLogin}>
+            페이스북 로그인
+          </button>
         </div>
       </Footer>
     </Wrap>

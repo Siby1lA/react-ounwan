@@ -2,6 +2,17 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import { createGlobalStyle } from "styled-components";
+import { BrowserRouter } from "react-router-dom";
+import Header from "./components/Header";
+import { Provider } from "react-redux";
+import {
+  legacy_createStore as createStore,
+  applyMiddleware,
+  compose,
+} from "redux";
+import promiseMiddleware from "redux-promise";
+import ReduxThunk from "redux-thunk";
+import rootReducer from "./redux/reducer";
 const GlobalStyle = createGlobalStyle`
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
@@ -68,13 +79,20 @@ a {
 }
 
 `;
-
+const store = applyMiddleware(promiseMiddleware, ReduxThunk)(createStore);
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
+const devTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__;
+
 root.render(
   <React.StrictMode>
-    <GlobalStyle />
-    <App />
+    <Provider store={store(rootReducer, devTools && devTools())}>
+      <GlobalStyle />
+      <BrowserRouter>
+        <Header />
+        <App />
+      </BrowserRouter>
+    </Provider>
   </React.StrictMode>
 );

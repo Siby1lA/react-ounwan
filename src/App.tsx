@@ -1,5 +1,4 @@
 import { Routes, Route, useNavigate } from "react-router-dom";
-import Header from "./components/Header";
 import Home from "./Routes/Home";
 import Login from "./Routes/Auth/Login";
 import Register from "./Routes/Auth/Register";
@@ -7,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { authService } from "./firebase";
 import { clearUser, setUser } from "./redux/actions/UserAction";
+import Profile from "./Routes/Profile";
 
 function App() {
   const navigate = useNavigate();
@@ -30,8 +30,10 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />}></Route>
         <Route path="/:type" element={<Home />}></Route>
+        <Route path="/:type/create" element={<Home />}></Route>
         <Route path="/login" element={<Login />}></Route>
         <Route path="/register" element={<Register />}></Route>
+        <Route path="/profile" element={<Profile />}></Route>
       </Routes>
     );
   }

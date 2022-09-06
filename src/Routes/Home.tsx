@@ -2,10 +2,12 @@ import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import BoxView from "../components/BoxView";
+import CreateModal from "../components/CreateModal";
 const Wrap = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
+  position: relative;
 `;
 const Contents = styled.div`
   width: 90vw;
@@ -30,7 +32,22 @@ const ContentTitle = styled.h1`
   font-weight: 600;
   margin-bottom: 20px;
 `;
-
+const Create = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px 0px;
+  div {
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #dfdfdf;
+    border-radius: 5px;
+    padding: 14px;
+  }
+`;
 function Home() {
   const { type } = useParams();
   const navigate = useNavigate();
@@ -54,9 +71,13 @@ function Home() {
         </SubHeader>
         <Content>
           <ContentTitle>오늘 운동 완료</ContentTitle>
+          <Create>
+            <div onClick={() => navigate(`/${type}/create`)}>게시글 작성</div>
+          </Create>
           <BoxView type={type} />
         </Content>
       </Contents>
+      <CreateModal />
     </Wrap>
   );
 }

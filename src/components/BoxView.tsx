@@ -1,4 +1,7 @@
+import { child, onChildAdded, onValue, push, ref } from "firebase/database";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { dbService } from "../firebase";
 const Wrap = styled.div`
   /* width: fit-content;
   display: grid;
@@ -89,6 +92,15 @@ const UploadImg = styled.img`
   height: 405px;
 `;
 function BoxView(type: any) {
+  const [healthPost, setHealthPost] = useState({});
+  const healthRef = ref(dbService, "health");
+  useEffect(() => {
+    onValue(healthRef, (snapshot) => {
+      const data = snapshot.val();
+      setHealthPost(Object.entries(data));
+    });
+  }, []);
+  console.log(healthPost);
   return (
     <Wrap>
       <Contents>

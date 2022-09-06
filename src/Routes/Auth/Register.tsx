@@ -95,7 +95,7 @@ function Register() {
 
       //db에 저장
       set(ref(dbService, `users/${createdUser.user.uid}`), {
-        nickname: createdUser.user.displayName,
+        displayName: createdUser.user.displayName,
         image: createdUser.user.photoURL,
       });
     } catch (error: any) {

@@ -4,9 +4,14 @@ import { useRef, useState } from "react";
 import { useScroll } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-import { push, ref, set } from "firebase/database";
-import { dbService } from "../firebase";
+import { ref, set } from "firebase/database";
+import { dbService, storageService } from "../firebase";
 import { uid } from "uid";
+import {
+  getDownloadURL,
+  ref as strRef,
+  uploadBytesResumable,
+} from "firebase/storage";
 
 const Overlay = styled.div`
   position: fixed;
@@ -96,12 +101,7 @@ const Form = styled.form`
     border: none;
     border-bottom: 2px solid #eee;
     width: 100%;
-    :first-child {
-      height: 40px;
-    }
-    :last-child {
-      height: 50px;
-    }
+    height: 40px;
   }
 `;
 const UserInfo = styled.div`
@@ -119,16 +119,47 @@ const UserInfo = styled.div`
     }
   }
 `;
+
+const TagBox = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  min-height: 50px;
+  margin: 10px;
+  padding: 0 10px;
+  border: 2px solid rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  input {
+    display: inline-flex;
+    min-width: 150px;
+    background: transparent;
+    border: none;
+    outline: none;
+    cursor: text;
+  }
+`;
+const Tag = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 5px;
+  padding: 5px;
+  background-color: tomato;
+  border-radius: 5px;
+  color: white;
+  font-size: 13px;
+`;
 interface UForm {
-  title: string;
   descript: string;
+  tag: string;
+  img: any;
 }
 function CreateModal() {
   const navigate = useNavigate();
   const { scrollY } = useScroll();
   const user = useSelector((state: any) => state.User.currentUser);
   const [imgPath, setImgPath] = useState("");
-  const Post = ref(dbService, "health");
+  const [tagList, setTagList] = useState<any>([]);
   const { register, handleSubmit, watch, setValue } = useForm<UForm>();
   const chatMatch: PathMatch<string> | null = useMatch("/:type/create");
   if (chatMatch) {
@@ -138,9 +169,10 @@ function CreateModal() {
   const onOverlayClick = () => {
     document.body.style.overflow = "unset";
     navigate(-1);
-    setValue("title", "");
     setValue("descript", "");
     setImgPath("");
+    setTagList("");
+    setValue("tag", "");
   };
   const inputOpenImageRef = useRef<any>();
   const handleOpenImageRef = () => {
@@ -148,29 +180,89 @@ function CreateModal() {
   };
   const handleUploadImage = async (event: any) => {
     setImgPath(URL.createObjectURL(event.target.files[0]));
+    setValue("img", event.target.files[0]);
   };
   const onSubmit = async (data: UForm) => {
     if (imgPath) {
-      const uuid = uid();
       try {
-        await set(ref(dbService, `health/${uuid}`), {
-          id: uuid,
-          Title: data.title,
-          description: data.descript,
-          image: imgPath,
-          createBy: {
-            displayName: user.displayName,
-            image: user.photoURL,
+        // storage에 저장
+        const uploadImg = uploadBytesResumable(
+          strRef(storageService, `health/img/${uid()}`),
+          data.img
+        );
+        uploadImg.on(
+          "state_changed",
+          (snapshot) => {
+            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+
+            switch (snapshot.state) {
+              case "paused":
+                console.log("Upload is paused");
+                break;
+              case "running":
+                console.log("Upload is running");
+                break;
+            }
           },
-        });
+          (error) => {
+            // A full list of error codes is available at
+            // https://firebase.google.com/docs/storage/web/handle-errors
+            switch (error.code) {
+              case "storage/unauthorized":
+                // User doesn't have permission to access the object
+                break;
+              case "storage/canceled":
+                // User canceled the upload
+                break;
+              // ...
+              case "storage/unknown":
+                // Unknown error occurred, inspect error.serverResponse
+                break;
+            }
+          },
+          () => {
+            // 스토리지에 저장이 된 후 DB에 저장
+            // 저장된 파일을 URL로 가져오기
+
+            getDownloadURL(uploadImg.snapshot.ref).then((downloadURL) => {
+              const id = uid();
+              set(ref(dbService, `health/${id}`), {
+                id: id,
+                timestamp: String(new Date()),
+                description: data.descript,
+                image: downloadURL,
+                likes: 0,
+                likes_list: [user.uid],
+                tagList: tagList,
+                createBy: {
+                  displayName: user.displayName,
+                  image: user.photoURL,
+                  uid: user.uid,
+                },
+              });
+            });
+          }
+        );
         alert("작성되었습니다.");
         onOverlayClick();
       } catch (error: any) {
         console.log(error);
       }
     } else {
-      console.log("이미지 를 넣어주세요");
+      alert("이미지 를 넣어주세요");
     }
+  };
+  const onKeyUp = (e: any) => {
+    //해쉬태그 리스트에 담기
+    if (e.target.value.length !== 0 && e.key === "Enter") {
+      let updatedTagList = [...tagList];
+      updatedTagList.push(e.target.value);
+      setTagList(updatedTagList);
+      setValue("tag", "");
+    }
+  };
+  const checkKeyDown = (e: any) => {
+    if (e.code === "Enter") e.preventDefault();
   };
   return (
     <>
@@ -179,7 +271,10 @@ function CreateModal() {
           <Overlay onClick={onOverlayClick} key={1} />
           <Wrap>
             <Contents style={{ top: scrollY.get() + 80 }}>
-              <Form onSubmit={handleSubmit(onSubmit)}>
+              <Form
+                onSubmit={handleSubmit(onSubmit)}
+                onKeyDown={(e) => checkKeyDown(e)}
+              >
                 <Header>
                   <div onClick={onOverlayClick}>
                     <svg
@@ -202,15 +297,32 @@ function CreateModal() {
                 </UserInfo>
                 <ContentInput>
                   <input
-                    {...register("title")}
-                    type="text"
-                    placeholder="제목 입력..."
-                  />
-                  <input
                     {...register("descript")}
                     type="text"
                     placeholder="내용 입력..."
                   />
+                  <TagBox>
+                    {tagList &&
+                      tagList.map((data: string, index: number) => (
+                        <Tag key={index}>{data}</Tag>
+                      ))}
+                    <input
+                      {...register("tag")}
+                      type="text"
+                      value={watch("tag") || ""}
+                      onKeyUp={onKeyUp}
+                      placeholder="해시태그 입력"
+                    ></input>
+                  </TagBox>
+
+                  <input
+                    {...register("img")}
+                    style={{ display: "none" }}
+                    type="file"
+                    ref={inputOpenImageRef}
+                    accept="image/*"
+                    onChange={handleUploadImage}
+                  ></input>
                 </ContentInput>
                 <ImgUpload>
                   <div>
@@ -233,13 +345,6 @@ function CreateModal() {
                 </ImgUpload>
               </Form>
             </Contents>
-            <input
-              style={{ display: "none" }}
-              type="file"
-              ref={inputOpenImageRef}
-              accept="image/jpeg, image/png"
-              onChange={handleUploadImage}
-            ></input>
           </Wrap>
         </>
       )}

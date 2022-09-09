@@ -311,7 +311,7 @@ function CreateModal() {
                       type="text"
                       value={watch("tag") || ""}
                       onKeyUp={onKeyUp}
-                      placeholder="해시태그 입력"
+                      placeholder="해시태그 입력... (엔터로 구분)"
                     ></input>
                   </TagBox>
 

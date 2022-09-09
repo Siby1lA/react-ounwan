@@ -1,8 +1,11 @@
 import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import BoxView from "../components/BoxView";
 import CreateModal from "../components/CreateModal";
+import UpdateModal from "../components/UpdateModal";
+import { setType } from "../redux/actions/UserAction";
 const Wrap = styled.div`
   width: 100%;
   display: flex;
@@ -50,8 +53,11 @@ const Create = styled.div`
 `;
 function Home() {
   const { type } = useParams();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  useEffect(() => {
+    dispatch(setType(type));
+  }, [type]);
   return (
     <Wrap>
       <Contents>
@@ -74,10 +80,11 @@ function Home() {
           <Create>
             <div onClick={() => navigate(`/${type}/create`)}>게시글 작성</div>
           </Create>
-          <BoxView type={type} />
+          <BoxView />
         </Content>
       </Contents>
       <CreateModal />
+      <UpdateModal />
     </Wrap>
   );
 }

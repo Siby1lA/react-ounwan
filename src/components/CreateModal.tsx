@@ -264,6 +264,10 @@ function CreateModal() {
   const checkKeyDown = (e: any) => {
     if (e.code === "Enter") e.preventDefault();
   };
+  const onTagDel = (data: string) => {
+    const filteredTagList = tagList.filter((tagItem: any) => tagItem !== data);
+    setTagList(filteredTagList);
+  };
   return (
     <>
       {chatMatch && (
@@ -304,7 +308,9 @@ function CreateModal() {
                   <TagBox>
                     {tagList &&
                       tagList.map((data: string, index: number) => (
-                        <Tag key={index}>{data}</Tag>
+                        <Tag key={index} onClick={() => onTagDel(data)}>
+                          {data}
+                        </Tag>
                       ))}
                     <input
                       {...register("tag")}

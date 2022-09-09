@@ -140,6 +140,7 @@ const TagBox = styled.div`
   }
 `;
 const Tag = styled.span`
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -241,7 +242,6 @@ function UpdateModal() {
             () => {
               // 스토리지에 저장이 된 후 DB에 저장
               // 저장된 파일을 URL로 가져오기
-
               getDownloadURL(uploadImg.snapshot.ref).then((downloadURL) => {
                 update(child(ref(dbService), `health/${boxData.id}`), {
                   timestamp: String(new Date()),
@@ -253,7 +253,6 @@ function UpdateModal() {
             }
           );
         } else {
-          console.log(1);
           update(child(ref(dbService), `health/${boxData.id}`), {
             // timestamp: String(new Date()),
             description: data.descript,
@@ -281,6 +280,10 @@ function UpdateModal() {
   };
   const checkKeyDown = (e: any) => {
     if (e.code === "Enter") e.preventDefault();
+  };
+  const onTagDel = (data: string) => {
+    const filteredTagList = tagList.filter((tagItem: any) => tagItem !== data);
+    setTagList(filteredTagList);
   };
   return (
     <>
@@ -323,7 +326,9 @@ function UpdateModal() {
                     <TagBox>
                       {tagList &&
                         tagList.map((data: string, index: number) => (
-                          <Tag key={index}>{data}</Tag>
+                          <Tag key={index} onClick={() => onTagDel(data)}>
+                            {data}
+                          </Tag>
                         ))}
                       <input
                         {...register("tag")}

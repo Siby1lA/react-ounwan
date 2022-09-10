@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
-import BoxView from "../components/BoxView";
-import CreateModal from "../components/CreateModal";
-import UpdateModal from "../components/UpdateModal";
+import BoxView from "../components/Box/BoxView";
+import CreateModal from "../components/Box/CreateModal";
+import UpdateModal from "../components/Box/UpdateModal";
 import { setType } from "../redux/actions/UserAction";
 const Wrap = styled.div`
   width: 100%;
@@ -28,6 +28,9 @@ const Title = styled.h1`
 const SubTitle = styled.h2`
   font-size: 40px;
   font-weight: 400;
+  span {
+    color: #3f51b5;
+  }
 `;
 const Content = styled.div``;
 const ContentTitle = styled.h1`
@@ -55,6 +58,7 @@ function Home() {
   const { type } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const user = useSelector((state: any) => state.User.currentUser);
   useEffect(() => {
     dispatch(setType(type));
   }, [type]);
@@ -62,17 +66,9 @@ function Home() {
     <Wrap>
       <Contents>
         <SubHeader>
-          <Title>💪 {type}</Title>
+          <Title>💪 오늘의 운동 완료!</Title>
           <SubTitle>
-            {type === "헬스"
-              ? "헬스는 점진적 과부하"
-              : type === "필라테스"
-              ? "필라테스는 유연성"
-              : type === "크로스핏"
-              ? "크로스핏은 끈기"
-              : type === "파워리프팅"
-              ? "파워 그자체 파워리프팅"
-              : null}
+            <span>{user.displayName}</span>님 반갑습니다.
           </SubTitle>
         </SubHeader>
         <Content>

@@ -1,7 +1,7 @@
 import { child, get, getDatabase, onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { dbService } from "../firebase";
+import { dbService } from "../../firebase";
 import BoxContents from "./BoxContents";
 
 const Wrap = styled.div`

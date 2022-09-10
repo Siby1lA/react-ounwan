@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { authService } from "../firebase";
 import useOutSideRef from "../hooks/useOutSideRef";
 import { setDropDownOpen } from "../redux/actions/TriggerAction";
+import { clearUser } from "../redux/actions/UserAction";
 
 const Wrap = styled.div`
   position: sticky;
@@ -93,16 +94,18 @@ function Header() {
   const isDropOpen = useSelector((state: any) => state.Trigger.isDropOpen);
   const user = useSelector((state: any) => state.User.currentUser);
   const outsideRef = useOutSideRef();
+  const onLogout = () => {
+    dispatch(clearUser());
+    authService.signOut();
+  };
   return (
     <Wrap>
       <Nav>
-        <Logo>오운완!</Logo>
+        <Logo onClick={() => navigate(`/${"오운완"}`)}>오운완!</Logo>
         <Category>
           <ul>
-            <li onClick={() => navigate(`/${"헬스"}`)}>헬스</li>
-            <li onClick={() => navigate(`/${"필라테스"}`)}>필라테스</li>
-            <li onClick={() => navigate(`/${"크로스핏"}`)}>크로스핏</li>
-            <li onClick={() => navigate(`/${"파워리프팅"}`)}>파워리프팅</li>
+            <li onClick={() => navigate(`/${"오운완"}`)}>오운완</li>
+            <li onClick={() => navigate(`/${"피드백"}`)}>피드백</li>
           </ul>
         </Category>
         <Set>
@@ -134,7 +137,7 @@ function Header() {
             {user ? (
               <>
                 <li onClick={() => navigate("/profile")}>프로필</li>
-                <li onClick={() => authService.signOut()}>로그아웃</li>
+                <li onClick={onLogout}>로그아웃</li>
               </>
             ) : (
               <>

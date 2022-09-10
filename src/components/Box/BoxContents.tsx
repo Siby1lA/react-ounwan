@@ -10,10 +10,8 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { dbService } from "../firebase";
-import useOutSideRef from "../hooks/useOutSideRef";
-import { setBox } from "../redux/actions/UserAction";
-import UpdateModal from "./UpdateModal";
+import { dbService } from "../../firebase";
+import { setBox } from "../../redux/actions/UserAction";
 
 const Box = styled.div`
   width: 380px;
@@ -187,7 +185,7 @@ function BoxContents({ data }: any) {
             </div>
             <LogoBox>
               <LogoWrap>
-                {data.likes_list.includes(user.uid) ? (
+                {data.likes_list.includes(user?.uid) ? (
                   <LikeLogo
                     onClick={() => onLikeClick(data)}
                     fill="tomato"

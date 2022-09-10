@@ -5,14 +5,14 @@ import { useScroll } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { child, get, getDatabase, ref, set, update } from "firebase/database";
-import { dbService, storageService } from "../firebase";
+import { dbService, storageService } from "../../firebase";
 import { uid } from "uid";
 import {
   getDownloadURL,
   ref as strRef,
   uploadBytesResumable,
 } from "firebase/storage";
-import { setBox } from "../redux/actions/UserAction";
+import { setBox } from "../../redux/actions/UserAction";
 
 const Overlay = styled.div`
   position: fixed;

@@ -15,7 +15,7 @@ function App() {
   useEffect(() => {
     authService.onAuthStateChanged((user: string) => {
       if (user) {
-        navigate("/헬스");
+        navigate("/오운완");
         dispatch(setUser(user));
       } else {
         navigate("/login");

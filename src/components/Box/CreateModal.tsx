@@ -5,7 +5,7 @@ import { useScroll } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { ref, set } from "firebase/database";
-import { dbService, storageService } from "../firebase";
+import { dbService, storageService } from "../../firebase";
 import { uid } from "uid";
 import {
   getDownloadURL,
@@ -114,6 +114,7 @@ const UserInfo = styled.div`
     }
     img {
       width: 35px;
+      height: 35px;
       border-radius: 50%;
       margin-right: 10px;
     }

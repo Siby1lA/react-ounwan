@@ -4,14 +4,14 @@ import { useRef, useState } from "react";
 import { useScroll } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-import { ref, set } from "firebase/database";
-import { dbService, storageService } from "../../firebase";
+import { fireSotreDB, storageService } from "../../firebase";
 import { uid } from "uid";
 import {
   getDownloadURL,
   ref as strRef,
   uploadBytesResumable,
 } from "firebase/storage";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 const Overlay = styled.div`
   position: fixed;
@@ -226,10 +226,9 @@ function CreateModal() {
             // 저장된 파일을 URL로 가져오기
 
             getDownloadURL(uploadImg.snapshot.ref).then((downloadURL) => {
-              const id = uid();
-              set(ref(dbService, `health/${id}`), {
-                id: id,
-                timestamp: String(new Date()),
+              const postRef = collection(fireSotreDB, "health");
+              addDoc(postRef, {
+                timestamp: serverTimestamp(),
                 description: data.descript,
                 image: downloadURL,
                 likes: 0,
@@ -327,7 +326,7 @@ function CreateModal() {
                     style={{ display: "none" }}
                     type="file"
                     ref={inputOpenImageRef}
-                    accept="image/*"
+                    accept="image/jpeg, image/png, image/webp"
                     onChange={handleUploadImage}
                   ></input>
                 </ContentInput>

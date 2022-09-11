@@ -3,9 +3,10 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { authService, dbService } from "../../firebase";
+import { authService, dbService, fireSotreDB } from "../../firebase";
 import md5 from "md5";
 import { ref, set } from "firebase/database";
+import { addDoc, collection } from "firebase/firestore";
 const Wrap = styled.div`
   width: 100%;
   display: flex;
@@ -94,9 +95,11 @@ function Register() {
       });
 
       //db에 저장
-      set(ref(dbService, `users/${createdUser.user.uid}`), {
+      const userRef = collection(fireSotreDB, "users");
+      addDoc(userRef, {
         displayName: createdUser.user.displayName,
         image: createdUser.user.photoURL,
+        uid: createdUser.user.uid,
       });
     } catch (error: any) {
       setErrorFromSubmit(error.message);

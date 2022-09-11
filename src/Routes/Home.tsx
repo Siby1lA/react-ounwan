@@ -1,3 +1,5 @@
+import { ref } from "firebase/database";
+import { doc, getDoc, setDoc } from "firebase/firestore/lite";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -5,6 +7,7 @@ import styled from "styled-components";
 import BoxView from "../components/Box/BoxView";
 import CreateModal from "../components/Box/CreateModal";
 import UpdateModal from "../components/Box/UpdateModal";
+import { dbService, fireSotreDB } from "../firebase";
 import { setType } from "../redux/actions/UserAction";
 const Wrap = styled.div`
   width: 100%;
@@ -64,23 +67,50 @@ function Home() {
   }, [type]);
   return (
     <Wrap>
-      <Contents>
-        <SubHeader>
-          <Title>💪 오늘의 운동 완료!</Title>
-          <SubTitle>
-            <span>{user.displayName}</span>님 반갑습니다.
-          </SubTitle>
-        </SubHeader>
-        <Content>
-          <ContentTitle>오늘 운동 완료</ContentTitle>
-          <Create>
-            <div onClick={() => navigate(`/${type}/create`)}>게시글 작성</div>
-          </Create>
-          <BoxView />
-        </Content>
-      </Contents>
-      <CreateModal />
-      <UpdateModal />
+      {type === "오운완" ? (
+        <>
+          <Contents>
+            <SubHeader>
+              <Title>💪 오늘의 운동 완료!</Title>
+              <SubTitle>
+                <span>{user?.displayName}</span>님 반갑습니다.
+              </SubTitle>
+            </SubHeader>
+            <Content>
+              <ContentTitle>오늘 운동 완료</ContentTitle>
+              <Create>
+                <div onClick={() => navigate(`/${type}/create`)}>
+                  게시글 작성
+                </div>
+              </Create>
+              <BoxView />
+            </Content>
+          </Contents>
+          <CreateModal />
+          <UpdateModal />
+        </>
+      ) : (
+        type === "피드백" && (
+          <>
+            <Contents>
+              <SubHeader>
+                <Title>💪 운동 피드백</Title>
+                <SubTitle>
+                  <span>{user.displayName}</span>님 반갑습니다.
+                </SubTitle>
+              </SubHeader>
+              <Content>
+                <ContentTitle>운동 피드백</ContentTitle>
+                <Create>
+                  <div onClick={() => navigate(`/${type}/create`)}>
+                    게시글 작성
+                  </div>
+                </Create>
+              </Content>
+            </Contents>
+          </>
+        )
+      )}
     </Wrap>
   );
 }

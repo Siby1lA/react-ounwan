@@ -4,11 +4,12 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
 } from "firebase/auth";
+import { addDoc, collection, getDocs } from "firebase/firestore";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { authService } from "../../firebase";
+import { authService, fireSotreDB } from "../../firebase";
 
 const Wrap = styled.div`
   width: 100%;
@@ -119,8 +120,25 @@ function Login() {
     } = event;
     if (name === "google") {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(authService, provider);
-      navigate("/헬스");
+      await signInWithPopup(authService, provider).then(async (data) => {
+        //db에 유저 정보가 저장되어있는지 확인
+        const userData = await getDocs(collection(fireSotreDB, "users"));
+        let userId: any[] = [];
+        userData.forEach((doc) => {
+          userId.push({ id: doc.id, ...doc.data() });
+        });
+        const filter = userId.filter((val) => val.uid === data.user.uid);
+        //db에 유저 정보가 없으면 추가
+        if (filter[0] == undefined) {
+          const userRef = collection(fireSotreDB, "users");
+          addDoc(userRef, {
+            displayName: data.user.displayName,
+            image: data.user.photoURL,
+            uid: data.user.uid,
+          });
+        }
+      });
+      navigate("/오운완");
     } else if (name === "facebook") {
       const provider = new FacebookAuthProvider();
       await signInWithPopup(authService, provider);

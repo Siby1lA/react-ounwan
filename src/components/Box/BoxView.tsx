@@ -1,7 +1,7 @@
-import { child, get, getDatabase, onValue, ref } from "firebase/database";
+import { collection, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { dbService } from "../../firebase";
+import { fireSotreDB } from "../../firebase";
 import BoxContents from "./BoxContents";
 
 const Wrap = styled.div`
@@ -18,28 +18,16 @@ const Contents = styled.div`
 
 function BoxView() {
   const [healthPost, setHealthPost] = useState([]);
-  const healthRef = ref(dbService, "health");
 
   useEffect(() => {
-    // 최신값 (소켓)
-    onValue(healthRef, (snapshot) => {
-      if (snapshot.val()) {
-        const data = snapshot.val();
-        setHealthPost(Object.values(data));
-      }
+    // 실시간값 받아오기
+    onSnapshot(collection(fireSotreDB, "health"), (snapShot) => {
+      const list: any = snapShot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setHealthPost(list);
     });
-    // 게시물 데이터 가져오기
-    get(child(ref(getDatabase()), "health"))
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          setHealthPost(Object.values(snapshot.val()));
-        } else {
-          console.log("No data available");
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
   }, []);
 
   return (
@@ -48,10 +36,7 @@ function BoxView() {
         {healthPost &&
           healthPost
             .filter((data) => data)
-            .sort(
-              (a: any, b: any) =>
-                Date.parse(b.timestamp) - Date.parse(a.timestamp)
-            )
+            .sort((a: any, b: any) => b.timestamp - a.timestamp)
             .map((data: any, index) => <BoxContents key={index} data={data} />)}
       </Contents>
     </Wrap>

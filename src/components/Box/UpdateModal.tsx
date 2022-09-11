@@ -4,8 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useScroll } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { child, get, getDatabase, ref, set, update } from "firebase/database";
-import { dbService, storageService } from "../../firebase";
+import { fireSotreDB, storageService } from "../../firebase";
 import { uid } from "uid";
 import {
   getDownloadURL,
@@ -13,6 +12,7 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { setBox } from "../../redux/actions/UserAction";
+import { doc, setDoc } from "firebase/firestore";
 
 const Overlay = styled.div`
   position: fixed;
@@ -243,21 +243,29 @@ function UpdateModal() {
               // 스토리지에 저장이 된 후 DB에 저장
               // 저장된 파일을 URL로 가져오기
               getDownloadURL(uploadImg.snapshot.ref).then((downloadURL) => {
-                update(child(ref(dbService), `health/${boxData.id}`), {
-                  timestamp: String(new Date()),
-                  description: data.descript,
-                  image: downloadURL,
-                  tagList: tagList,
-                });
+                const postRef = doc(fireSotreDB, "health", `${id}`);
+                setDoc(
+                  postRef,
+                  {
+                    description: data.descript,
+                    image: downloadURL,
+                    tagList: tagList,
+                  },
+                  { merge: true }
+                );
               });
             }
           );
         } else {
-          update(child(ref(dbService), `health/${boxData.id}`), {
-            // timestamp: String(new Date()),
-            description: data.descript,
-            tagList: tagList,
-          });
+          const postRef = doc(fireSotreDB, "health", `${id}`);
+          setDoc(
+            postRef,
+            {
+              description: data.descript,
+              tagList: tagList,
+            },
+            { merge: true }
+          );
         }
 
         alert("작성되었습니다.");

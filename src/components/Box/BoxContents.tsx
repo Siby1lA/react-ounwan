@@ -1,16 +1,10 @@
-import {
-  child,
-  get,
-  getDatabase,
-  ref,
-  remove,
-  update,
-} from "firebase/database";
+import { child, ref, update } from "firebase/database";
+import { deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { dbService } from "../../firebase";
+import { dbService, fireSotreDB } from "../../firebase";
 import { setBox } from "../../redux/actions/UserAction";
 
 const Box = styled.div`
@@ -128,44 +122,55 @@ function BoxContents({ data }: any) {
   const [isDropOpen, setIsDropOpen] = useState(false);
   const user = useSelector((state: any) => state.User.currentUser);
   const type = useSelector((state: any) => state.User.type);
-  const healthRef = ref(dbService, "health");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const onLikeClick = (data: any) => {
-    if (data.createBy.uid === user.uid) {
+    if (data.createBy.uid === user?.uid) {
       alert("작성자 본인은 좋아요를 누룰 수 없습니다.");
       return;
     }
-    if (!data.likes_list.includes(user.uid)) {
+    if (!data.likes_list.includes(user?.uid)) {
       //좋아요 누름
-      update(child(healthRef, `/${data.id}`), {
-        likes: data.likes + 1,
-        likes_list: [...data.likes_list, user.uid],
-      });
+      console.log("좋아요");
+      const postRef = doc(fireSotreDB, "health", `${data.id}`);
+      setDoc(
+        postRef,
+        {
+          likes: data.likes + 1,
+          likes_list: [...data.likes_list, user?.uid],
+        },
+        { merge: true }
+      );
     } else {
-      const index = data.likes_list.findIndex((e: any) => e === user.uid);
+      console.log("싫어요");
+      let dataList = data.likes_list;
+      const index = dataList.indexOf(user?.uid);
+      if (index > -1) dataList.splice(index, 1);
+
       //좋아요 취소
-      update(child(healthRef, `/${data.id}`), {
-        likes: data.likes - 1,
-        likes_list: [data.likes_list.splice(index, 1)],
-      });
+      const postRef = doc(fireSotreDB, "health", `${data.id}`);
+      setDoc(
+        postRef,
+        {
+          likes: data.likes - 1,
+          likes_list: dataList,
+        },
+        { merge: true }
+      );
     }
   };
   const onDelete = () => {
-    remove(ref(dbService, `health/${data.id}`));
+    deleteDoc(doc(fireSotreDB, "health", `${data.id}`));
   };
-  const onUpdate = () => {
-    get(child(ref(getDatabase()), `health/${data.id}`))
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          dispatch(setBox(snapshot.val()));
-        } else {
-          console.log("No data available");
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  const onUpdate = async () => {
+    const docRef = doc(fireSotreDB, "health", `${data.id}`);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      dispatch(setBox(docSnap.data()));
+    } else {
+      // doc.data() will be undefined in this case
+      console.log("No such document!");
+    }
     navigate(`/${type}/update/${data.id}`);
   };
   return (

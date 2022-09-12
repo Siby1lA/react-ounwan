@@ -30,7 +30,6 @@ function App() {
   if (isLoading) {
     return <div>로딩중...</div>;
   } else {
-    console.log(isDarkMode);
     return (
       <>
         <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>

@@ -87,7 +87,7 @@ const ImgChoice = styled.div`
   border-radius: 3px;
   background-color: ${(props) => props.theme.btnColor};
   margin-top: 15px;
-  color: white;
+  color: ${(props) => props.theme.textColor};
   font-weight: 400;
   font-size: 16px;
   cursor: pointer;

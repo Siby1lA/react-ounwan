@@ -6,7 +6,7 @@ export const lightTheme = {
   borderColor: "#eee",
   headerColor: "#FFFFFF",
   boxColor: "#FFFFFF",
-  btnColor: "#0095f6",
+  btnColor: "#dfdfdf",
 };
 
 export const darkTheme = {

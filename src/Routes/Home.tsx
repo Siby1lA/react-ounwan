@@ -52,7 +52,7 @@ const Create = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: ${(props) => props.theme.boxColor};
+    background-color: ${(props) => props.theme.btnColor};
     border-radius: 5px;
     padding: 14px;
   }

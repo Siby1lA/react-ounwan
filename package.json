@@ -14,6 +14,7 @@
     "framer-motion": "^6.3.16",
     "md5": "^2.3.0",
     "react": "^18.2.0",
+    "react-bottom-scroll-listener": "^5.1.0",
     "react-dom": "^18.2.0",
     "react-easy-crop": "^4.5.0",
     "react-hook-form": "^7.34.2",

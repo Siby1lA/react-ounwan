@@ -20,8 +20,9 @@ import {
 } from "../firebase";
 const Wrap = styled.div`
   display: flex;
-  align-items: center;
   justify-content: center;
+  width: 100%;
+  background-color: ${(props) => props.theme.bgColor};
   span {
     font-weight: 400;
     font-size: 16px;

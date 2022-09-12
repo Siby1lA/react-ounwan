@@ -7,8 +7,12 @@ import { useEffect } from "react";
 import { authService } from "./firebase";
 import { clearUser, setUser } from "./redux/actions/UserAction";
 import Profile from "./Routes/Profile";
+import Header from "./components/Header";
+import { ThemeProvider } from "styled-components";
 
+import { darkTheme, lightTheme } from "./theme";
 function App() {
+  const isDarkMode = useSelector((state: any) => state.Trigger.isDarkMode);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isLoading = useSelector((state: any) => state.User.isLoading);
@@ -26,16 +30,22 @@ function App() {
   if (isLoading) {
     return <div>로딩중...</div>;
   } else {
+    console.log(isDarkMode);
     return (
-      <Routes>
-        <Route path="/" element={<Home />}></Route>
-        <Route path="/:type" element={<Home />}></Route>
-        <Route path="/:type/create" element={<Home />}></Route>
-        <Route path="/:type/update/:id" element={<Home />}></Route>
-        <Route path="/login" element={<Login />}></Route>
-        <Route path="/register" element={<Register />}></Route>
-        <Route path="/profile" element={<Profile />}></Route>
-      </Routes>
+      <>
+        <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+          <Header />
+          <Routes>
+            <Route path="/" element={<Home />}></Route>
+            <Route path="/:type" element={<Home />}></Route>
+            <Route path="/:type/create" element={<Home />}></Route>
+            <Route path="/:type/update/:id" element={<Home />}></Route>
+            <Route path="/login" element={<Login />}></Route>
+            <Route path="/register" element={<Register />}></Route>
+            <Route path="/profile" element={<Profile />}></Route>
+          </Routes>
+        </ThemeProvider>
+      </>
     );
   }
 }

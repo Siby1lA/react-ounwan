@@ -1,5 +1,6 @@
 const init = {
   isDropOpen: false,
+  isDarkMode: false,
 };
 export default function (state = init, action: any) {
   switch (action.type) {
@@ -8,6 +9,12 @@ export default function (state = init, action: any) {
         ...state,
         isDropOpen: action.data,
       };
+    case "SET_DARK_MODE":
+      return {
+        ...state,
+        isDarkMode: action.data,
+      };
+
     default:
       return state;
   }

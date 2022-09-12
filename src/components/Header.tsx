@@ -4,17 +4,18 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { authService } from "../firebase";
 import useOutSideRef from "../hooks/useOutSideRef";
-import { setDropDownOpen } from "../redux/actions/TriggerAction";
+import { setDarkMode, setDropDownOpen } from "../redux/actions/TriggerAction";
 import { clearUser } from "../redux/actions/UserAction";
 
 const Wrap = styled.div`
   position: sticky;
   top: 0px;
   z-index: 1;
-  background-color: white;
+  background-color: ${(props) => props.theme.headerColor};
   width: 100%;
   height: 65px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid ${(props) => props.theme.borderColor};
+
   display: flex;
   justify-content: center;
 `;
@@ -29,8 +30,10 @@ const Nav = styled.div`
 const Logo = styled.h1`
   font-weight: 500;
   font-size: 28px;
+  color: ${(props) => props.theme.textColor};
 `;
 const Category = styled.div`
+  color: ${(props) => props.theme.textColor};
   font-weight: 600;
   ul {
     display: flex;
@@ -61,6 +64,7 @@ const Set = styled.div`
     }
     svg {
       width: 22px;
+      fill: ${(props) => props.theme.textColor};
     }
     cursor: pointer;
     :hover {
@@ -74,11 +78,13 @@ const Ul = styled.ul`
   margin-top: 130px;
   border-radius: 5px;
   border: 2px solid #eee;
+  background-color: ${(props) => props.theme.bgColor};
   width: 100px;
   li {
     padding: 10px;
     font-size: 14px;
     font-weight: 300;
+    color: ${(props) => props.theme.textColor};
     cursor: pointer;
     :first-child {
       border-bottom: 2px solid #eee;
@@ -92,6 +98,7 @@ function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isDropOpen = useSelector((state: any) => state.Trigger.isDropOpen);
+  const isDarkMode = useSelector((state: any) => state.Trigger.isDarkMode);
   const user = useSelector((state: any) => state.User.currentUser);
   const outsideRef = useOutSideRef();
   const onLogout = () => {
@@ -114,7 +121,13 @@ function Header() {
               <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z" />
             </svg>
           </div>
-          <div>
+          <div
+            onClick={() =>
+              isDarkMode
+                ? dispatch(setDarkMode(false))
+                : dispatch(setDarkMode(true))
+            }
+          >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
               <path d="M448 256c0-106-86-192-192-192V448c106 0 192-86 192-192zm64 0c0 141.4-114.6 256-256 256S0 397.4 0 256S114.6 0 256 0S512 114.6 512 256z" />
             </svg>

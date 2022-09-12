@@ -1,5 +1,3 @@
-import { ref } from "firebase/database";
-import { doc, getDoc, setDoc } from "firebase/firestore/lite";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -7,13 +5,15 @@ import styled from "styled-components";
 import BoxView from "../components/Box/BoxView";
 import CreateModal from "../components/Box/CreateModal";
 import UpdateModal from "../components/Box/UpdateModal";
-import { dbService, fireSotreDB } from "../firebase";
 import { setType } from "../redux/actions/UserAction";
+
 const Wrap = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
   position: relative;
+  background-color: ${(props) => props.theme.bgColor};
+  color: ${(props) => props.theme.textColor};
 `;
 const Contents = styled.div`
   width: 90vw;
@@ -52,7 +52,7 @@ const Create = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #dfdfdf;
+    background-color: ${(props) => props.theme.boxColor};
     border-radius: 5px;
     padding: 14px;
   }

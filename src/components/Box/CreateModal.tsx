@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { PathMatch, useMatch, useNavigate } from "react-router-dom";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useScroll } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
@@ -12,6 +12,7 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import Cropper, { Area, Point } from "react-easy-crop";
 
 const Overlay = styled.div`
   position: fixed;
@@ -32,7 +33,7 @@ const Contents = styled.div`
   left: 0;
   right: 0;
   margin: 0 auto;
-  background-color: white;
+  background-color: ${(props) => props.theme.bgColor};
   border-radius: 10px;
   width: 625px;
   height: 600px;
@@ -54,6 +55,7 @@ const Header = styled.div`
     cursor: pointer;
     width: 20px;
     margin-top: 5px;
+    fill: ${(props) => props.theme.textColor};
   }
   div:last-child {
   }
@@ -62,7 +64,7 @@ const Header = styled.div`
     font-size: 16px;
     cursor: pointer;
     border: none;
-    background-color: white;
+    background-color: ${(props) => props.theme.bgColor};
   }
 `;
 const ImgUpload = styled.div`
@@ -76,19 +78,19 @@ const ImgUpload = styled.div`
     fill: #183052;
     margin-bottom: 20px;
   }
-  div:last-child {
-    padding: 7px;
-    border-radius: 3px;
-    background-color: #0095f6;
-    margin-top: 15px;
-    color: white;
-    font-weight: 400;
-    font-size: 16px;
-    cursor: pointer;
-  }
   img {
-    width: 220px;
+    width: 100%;
   }
+`;
+const ImgChoice = styled.div`
+  padding: 7px;
+  border-radius: 3px;
+  background-color: ${(props) => props.theme.btnColor};
+  margin-top: 15px;
+  color: white;
+  font-weight: 400;
+  font-size: 16px;
+  cursor: pointer;
 `;
 const ContentInput = styled.div`
   padding: 0px 20px;
@@ -99,7 +101,9 @@ const Form = styled.form`
   width: 100%;
   input {
     border: none;
-    border-bottom: 2px solid #eee;
+    border: 2px solid rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    background-color: ${(props) => props.theme.bgColor};
     width: 100%;
     height: 40px;
   }
@@ -150,6 +154,11 @@ const Tag = styled.span`
   color: white;
   font-size: 13px;
 `;
+const CropWrap = styled.div`
+  position: relative;
+  width: 300px;
+  height: 300px;
+`;
 interface UForm {
   descript: string;
   tag: string;
@@ -161,6 +170,7 @@ function CreateModal() {
   const user = useSelector((state: any) => state.User.currentUser);
   const [imgPath, setImgPath] = useState("");
   const [tagList, setTagList] = useState<any>([]);
+
   const { register, handleSubmit, watch, setValue } = useForm<UForm>();
   const chatMatch: PathMatch<string> | null = useMatch("/:type/create");
   if (chatMatch) {
@@ -224,7 +234,6 @@ function CreateModal() {
           () => {
             // 스토리지에 저장이 된 후 DB에 저장
             // 저장된 파일을 URL로 가져오기
-
             getDownloadURL(uploadImg.snapshot.ref).then((downloadURL) => {
               const postRef = collection(fireSotreDB, "health");
               addDoc(postRef, {
@@ -268,6 +277,13 @@ function CreateModal() {
     const filteredTagList = tagList.filter((tagItem: any) => tagItem !== data);
     setTagList(filteredTagList);
   };
+  const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const onCropComplete = useCallback(
+    (croppedArea: Area, croppedAreaPixels: Area) => {},
+    []
+  );
+
   return (
     <>
       {chatMatch && (
@@ -320,7 +336,6 @@ function CreateModal() {
                       placeholder="해시태그 입력... (엔터로 구분)"
                     ></input>
                   </TagBox>
-
                   <input
                     {...register("img")}
                     style={{ display: "none" }}
@@ -342,12 +357,24 @@ function CreateModal() {
                         </svg>
                       </>
                     ) : (
-                      <>
+                      <CropWrap>
                         <img src={imgPath} />
-                      </>
+                        {/* <Cropper
+                          image={imgPath}
+                          crop={crop}
+                          zoom={zoom}
+                          aspect={2 / 3}
+                          onCropChange={setCrop}
+                          onCropComplete={onCropComplete}
+                          onZoomChange={setZoom}
+                          objectFit="contain"
+                        /> */}
+                      </CropWrap>
                     )}
                   </div>
-                  <div onClick={handleOpenImageRef}>컴퓨터에서 사진 선택</div>
+                  <ImgChoice onClick={handleOpenImageRef}>
+                    컴퓨터에서 사진 선택
+                  </ImgChoice>
                 </ImgUpload>
               </Form>
             </Contents>

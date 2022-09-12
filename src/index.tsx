@@ -3,13 +3,8 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import { createGlobalStyle } from "styled-components";
 import { BrowserRouter } from "react-router-dom";
-import Header from "./components/Header";
 import { Provider } from "react-redux";
-import {
-  legacy_createStore as createStore,
-  applyMiddleware,
-  compose,
-} from "redux";
+import { legacy_createStore as createStore, applyMiddleware } from "redux";
 import promiseMiddleware from "redux-promise";
 import ReduxThunk from "redux-thunk";
 import rootReducer from "./redux/reducer";
@@ -85,12 +80,13 @@ const root = ReactDOM.createRoot(
 );
 const devTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__;
 
+const isDarkMode = false;
+
 root.render(
   <React.StrictMode>
     <Provider store={store(rootReducer, devTools && devTools())}>
       <GlobalStyle />
       <BrowserRouter>
-        <Header />
         <App />
       </BrowserRouter>
     </Provider>

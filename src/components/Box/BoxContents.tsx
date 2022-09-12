@@ -8,6 +8,7 @@ import { dbService, fireSotreDB } from "../../firebase";
 import { setBox } from "../../redux/actions/UserAction";
 
 const Box = styled.div`
+  background-color: ${(props) => props.theme.boxColor};
   width: 380px;
   height: 550px;
   margin: 20px;

@@ -197,12 +197,14 @@ function CreateModal() {
   }
 
   const onOverlayClick = () => {
-    document.body.style.overflow = "unset";
+    setInputToggle(false);
+    // document.body.style.overflow = "unset";
     navigate(-1);
     setValue("descript", "");
     setImgPath("");
     setTagList("");
     setValue("tag", "");
+    setValue("img", null);
   };
   const inputOpenImageRef = useRef<any>();
   const handleOpenImageRef = () => {
@@ -281,6 +283,7 @@ function CreateModal() {
       alert("이미지 를 넣어주세요");
     }
     setInputToggle(false);
+    setValue("img", null);
   };
   const onKeyUp = (e: any) => {
     //해쉬태그 리스트에 담기

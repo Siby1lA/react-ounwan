@@ -95,6 +95,7 @@ const SetLogo = styled.div`
   svg {
     width: 5px;
     cursor: pointer;
+    fill: ${(props) => props.theme.textColor};
   }
 `;
 const Ul = styled.ul`

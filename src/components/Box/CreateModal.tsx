@@ -164,7 +164,7 @@ const Tag = styled.span`
 `;
 const CropWrap = styled.div`
   position: relative;
-  width: 300px;
+  width: 400px;
   height: 400px;
 `;
 const ImgWrap = styled.div`
@@ -375,7 +375,7 @@ function CreateModal() {
                       <input
                         {...register("descript")}
                         type="text"
-                        placeholder="내용 입력..."
+                        placeholder="내용 입력... (22자 미만)"
                       />
                       <TagBox>
                         {tagList &&

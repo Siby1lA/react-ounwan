@@ -1,6 +1,13 @@
 import { updateProfile } from "firebase/auth";
-import { child, get, getDatabase, ref, update } from "firebase/database";
-import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  onSnapshot,
+  orderBy,
+  query,
+  setDoc,
+} from "firebase/firestore";
 import {
   getDownloadURL,
   ref as strRef,
@@ -12,15 +19,12 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { uid } from "uid";
-import {
-  authService,
-  dbService,
-  fireSotreDB,
-  storageService,
-} from "../firebase";
+import { authService, fireSotreDB, storageService } from "../firebase";
 const Wrap = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
   width: 100%;
   background-color: ${(props) => props.theme.bgColor};
   span {
@@ -73,6 +77,49 @@ const Create = styled.div`
     width: 60px;
   }
 `;
+const PostWrap = styled.div`
+  width: 80vw;
+  border-top: 1px solid #eee;
+  margin-top: 40px;
+  text-align: center;
+`;
+const Posts = styled.div`
+  display: flex;
+  justify-content: center;
+  @media screen and (max-width: 1000px) {
+    justify-content: center;
+  }
+  flex-wrap: wrap;
+`;
+const PostTitle = styled.div`
+  font-weight: 400;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  ul {
+    display: flex;
+    width: 200px;
+    justify-content: center;
+    align-items: center;
+    li {
+      cursor: pointer;
+      :hover {
+        transform: scale(1.1);
+      }
+      padding: 10px;
+      margin-right: 10px;
+      :last-child {
+        margin-right: 0px;
+      }
+    }
+  }
+`;
+const Post = styled.div`
+  margin: 10px;
+  img {
+    width: 280px;
+  }
+`;
 interface UForm {
   nickname: string;
   img: any;
@@ -81,15 +128,58 @@ interface UForm {
 function Profile() {
   const user = useSelector((state: any) => state.User.currentUser);
   const [imgPath, setImgPath] = useState("");
+  const [postData, setPostData] = useState<any>(null);
+  const [likeData, setLikeData] = useState<any>(null);
   const [userName, setUserName] = useState(user?.displayName);
+  const [onLike, setOnLike] = useState<any>(true);
   const navigate = useNavigate();
   const { register, handleSubmit, watch, setValue } = useForm<UForm>();
   const inputOpenImageRef = useRef<any>();
-  const healthRef = ref(dbService, "health");
   useEffect(() => {
     setValue("nickname", user?.displayName);
     setValue("img", user?.photoURL);
+
+    //유저 게시글 불러오기
+    getUserPosts();
   }, []);
+  const getUserPosts = async () => {
+    let healthData = query(
+      collection(fireSotreDB, "health"),
+      orderBy("timestamp", "desc")
+    );
+    onSnapshot(healthData, (snapShot) => {
+      const list: any = snapShot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      // 내 게시글
+      const filterData = list.filter(
+        (data: any) => data.createBy.uid === user.uid
+      );
+      setPostData(filterData);
+    });
+  };
+  const getLikePosts = async () => {
+    //좋아요 누른 게시글
+    let healthData = query(
+      collection(fireSotreDB, "health"),
+      orderBy("timestamp", "desc")
+    );
+    onSnapshot(healthData, (snapShot) => {
+      const list: any = snapShot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      const filterData = list.filter(
+        (data: any) => data.createBy.uid !== user.uid
+      );
+      const filterData2 = filterData.filter((data: any) =>
+        data.likes_list.includes(user.uid)
+      );
+
+      setLikeData(filterData2);
+    });
+  };
   const handleOpenImageRef = async () => {
     inputOpenImageRef.current.click();
   };
@@ -271,6 +361,43 @@ function Profile() {
           <button>제출</button>
         </Create>
       </form>
+      <PostWrap>
+        <PostTitle>
+          <ul>
+            <li
+              onClick={() => {
+                setOnLike(true);
+                getUserPosts();
+              }}
+            >
+              게시글
+            </li>
+            <li
+              onClick={() => {
+                setOnLike(false);
+                getLikePosts();
+              }}
+            >
+              좋아요
+            </li>
+          </ul>
+        </PostTitle>
+        <Posts>
+          {onLike
+            ? postData &&
+              postData.map((data: any, index: number) => (
+                <Post key={index}>
+                  <img src={data.image} />
+                </Post>
+              ))
+            : likeData &&
+              likeData.map((data: any, index: number) => (
+                <Post key={index}>
+                  <img src={data.image} />
+                </Post>
+              ))}
+        </Posts>
+      </PostWrap>
     </Wrap>
   );
 }

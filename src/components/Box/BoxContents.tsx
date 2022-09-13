@@ -66,6 +66,9 @@ const LikeCount = styled.div`
 const BoxTitle = styled.h1`
   font-weight: 400;
   margin-bottom: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 const BoxTag = styled.ul`
   display: flex;

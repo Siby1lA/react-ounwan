@@ -6,7 +6,7 @@ import {
   query,
   startAfter,
 } from "firebase/firestore";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useBottomScrollListener } from "react-bottom-scroll-listener";
 import styled from "styled-components";
 import { fireSotreDB } from "../../firebase";
@@ -32,7 +32,7 @@ function BoxView() {
     let q = query(
       collection(fireSotreDB, "health"),
       orderBy("timestamp", "desc"),
-      limit(2)
+      limit(12)
     );
     // 실시간값 받아오기
     onSnapshot(q, (snapShot) => {
@@ -44,12 +44,12 @@ function BoxView() {
       setLastKey(snapShot.docs[snapShot.docs.length - 1]);
     });
   }, []);
-  const fetchData = () => {
+  const addData = () => {
     let q = query(
       collection(fireSotreDB, "health"),
       orderBy("timestamp", "desc"),
       startAfter(lastKey),
-      limit(2)
+      limit(12)
     );
     onSnapshot(q, (snapShot) => {
       const list: any = snapShot.docs.map((doc) => ({
@@ -60,7 +60,7 @@ function BoxView() {
       setLastKey(snapShot.docs[snapShot.docs.length - 1]);
     });
   };
-  useBottomScrollListener(fetchData);
+  useBottomScrollListener(addData);
   return (
     <Wrap>
       <Contents>

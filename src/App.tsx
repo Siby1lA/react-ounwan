@@ -39,6 +39,7 @@ function App() {
             <Route path="/:type" element={<Home />}></Route>
             <Route path="/:type/create" element={<Home />}></Route>
             <Route path="/:type/update/:id" element={<Home />}></Route>
+            <Route path="/:type/view/:id" element={<Home />}></Route>
             <Route path="/login" element={<Login />}></Route>
             <Route path="/register" element={<Register />}></Route>
             <Route path="/profile" element={<Profile />}></Route>

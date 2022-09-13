@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { fireSotreDB, storageService } from "../../firebase";
 import { uid } from "uid";
+import getCroppedImg from "./cropImage";
 import {
   getDownloadURL,
   ref as strRef,
@@ -36,7 +37,7 @@ const Contents = styled.div`
   background-color: ${(props) => props.theme.bgColor};
   border-radius: 10px;
   width: 625px;
-  height: 600px;
+  height: 700px;
   /* 777px 시 vw로 변경 */
   @media screen and (max-width: 777px) {
     width: 70vw;
@@ -58,12 +59,18 @@ const Header = styled.div`
     fill: ${(props) => props.theme.textColor};
   }
   div:last-child {
+    color: #0095f6;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    background-color: ${(props) => props.theme.bgColor};
   }
   button {
     color: #0095f6;
     font-size: 16px;
     cursor: pointer;
     border: none;
+    padding: 0px;
     background-color: ${(props) => props.theme.bgColor};
   }
 `;
@@ -72,14 +79,11 @@ const ImgUpload = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 400px;
+  height: 650px;
   svg {
     width: 180px;
     fill: #183052;
     margin-bottom: 20px;
-  }
-  img {
-    width: 100%;
   }
 `;
 const ImgChoice = styled.div`
@@ -94,6 +98,9 @@ const ImgChoice = styled.div`
 `;
 const ContentInput = styled.div`
   padding: 0px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 const Form = styled.form`
   display: flex;
@@ -126,6 +133,7 @@ const UserInfo = styled.div`
 `;
 
 const TagBox = styled.div`
+  width: 100%;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -157,7 +165,18 @@ const Tag = styled.span`
 const CropWrap = styled.div`
   position: relative;
   width: 300px;
-  height: 300px;
+  height: 400px;
+`;
+const ImgWrap = styled.div`
+  text-align: center;
+  div {
+    font-weight: 400;
+  }
+  margin-top: 30px;
+  width: 380px;
+  img {
+    width: 100%;
+  }
 `;
 interface UForm {
   descript: string;
@@ -170,7 +189,7 @@ function CreateModal() {
   const user = useSelector((state: any) => state.User.currentUser);
   const [imgPath, setImgPath] = useState("");
   const [tagList, setTagList] = useState<any>([]);
-
+  const [inputToggle, setInputToggle] = useState(false);
   const { register, handleSubmit, watch, setValue } = useForm<UForm>();
   const chatMatch: PathMatch<string> | null = useMatch("/:type/create");
   if (chatMatch) {
@@ -191,7 +210,7 @@ function CreateModal() {
   };
   const handleUploadImage = async (event: any) => {
     setImgPath(URL.createObjectURL(event.target.files[0]));
-    setValue("img", event.target.files[0]);
+    // setValue("img", event.target.files[0]);
   };
   const onSubmit = async (data: UForm) => {
     if (imgPath) {
@@ -199,7 +218,8 @@ function CreateModal() {
         // storage에 저장
         const uploadImg = uploadBytesResumable(
           strRef(storageService, `health/img/${uid()}`),
-          data.img
+          data.img,
+          { contentType: "blob.type" }
         );
         uploadImg.on(
           "state_changed",
@@ -260,6 +280,7 @@ function CreateModal() {
     } else {
       alert("이미지 를 넣어주세요");
     }
+    setInputToggle(false);
   };
   const onKeyUp = (e: any) => {
     //해쉬태그 리스트에 담기
@@ -279,11 +300,37 @@ function CreateModal() {
   };
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
   const onCropComplete = useCallback(
-    (croppedArea: Area, croppedAreaPixels: Area) => {},
+    (croppedArea: Area, croppedAreaPixels: Area) => {
+      setCroppedAreaPixels(croppedAreaPixels);
+    },
     []
   );
+  const showCroppedImage = useCallback(async () => {
+    if (!imgPath) {
+      alert("이미지를 선택해주세요");
+      return;
+    }
+    try {
+      const croppedImage = await getCroppedImg(imgPath, croppedAreaPixels);
+      setValue("img", croppedImage);
+      setImgPath(URL.createObjectURL(croppedImage));
+      setInputToggle(true);
+    } catch (e) {
+      console.error(e);
+    }
+  }, [croppedAreaPixels]);
 
+  const onClose = useCallback(() => {
+    setValue("img", null);
+  }, []);
+  const onBackClick = () => {
+    if (inputToggle) {
+      setInputToggle(false);
+      return;
+    }
+  };
   return (
     <>
       {chatMatch && (
@@ -296,7 +343,7 @@ function CreateModal() {
                 onKeyDown={(e) => checkKeyDown(e)}
               >
                 <Header>
-                  <div onClick={onOverlayClick}>
+                  <div onClick={inputToggle ? onBackClick : onOverlayClick}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 448 512"
@@ -306,76 +353,90 @@ function CreateModal() {
                   </div>
                   <div>새 게시물 만들기</div>
                   <div>
-                    <button>공유</button>
-                  </div>
-                </Header>
-                <UserInfo>
-                  <div>
-                    <img src={user?.photoURL}></img>
-                    <span>{user?.displayName}</span>
-                  </div>
-                </UserInfo>
-                <ContentInput>
-                  <input
-                    {...register("descript")}
-                    type="text"
-                    placeholder="내용 입력..."
-                  />
-                  <TagBox>
-                    {tagList &&
-                      tagList.map((data: string, index: number) => (
-                        <Tag key={index} onClick={() => onTagDel(data)}>
-                          {data}
-                        </Tag>
-                      ))}
-                    <input
-                      {...register("tag")}
-                      type="text"
-                      value={watch("tag") || ""}
-                      onKeyUp={onKeyUp}
-                      placeholder="해시태그 입력... (엔터로 구분)"
-                    ></input>
-                  </TagBox>
-                  <input
-                    {...register("img")}
-                    style={{ display: "none" }}
-                    type="file"
-                    ref={inputOpenImageRef}
-                    accept="image/jpeg, image/png, image/webp"
-                    onChange={handleUploadImage}
-                  ></input>
-                </ContentInput>
-                <ImgUpload>
-                  <div>
-                    {imgPath == "" ? (
-                      <>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 640 512"
-                        >
-                          <path d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z" />
-                        </svg>
-                      </>
+                    {inputToggle ? (
+                      <button>공유</button>
                     ) : (
-                      <CropWrap>
-                        <img src={imgPath} />
-                        {/* <Cropper
-                          image={imgPath}
-                          crop={crop}
-                          zoom={zoom}
-                          aspect={2 / 3}
-                          onCropChange={setCrop}
-                          onCropComplete={onCropComplete}
-                          onZoomChange={setZoom}
-                          objectFit="contain"
-                        /> */}
-                      </CropWrap>
+                      <div onClick={showCroppedImage}>다음</div>
                     )}
                   </div>
-                  <ImgChoice onClick={handleOpenImageRef}>
-                    컴퓨터에서 사진 선택
-                  </ImgChoice>
-                </ImgUpload>
+                </Header>
+                {inputToggle ? (
+                  <>
+                    <UserInfo>
+                      <div>
+                        <img src={user?.photoURL}></img>
+                        <span>{user?.displayName}</span>
+                      </div>
+                    </UserInfo>
+                    <ContentInput>
+                      <input
+                        {...register("descript")}
+                        type="text"
+                        placeholder="내용 입력..."
+                      />
+                      <TagBox>
+                        {tagList &&
+                          tagList.map((data: string, index: number) => (
+                            <Tag key={index} onClick={() => onTagDel(data)}>
+                              {data}
+                            </Tag>
+                          ))}
+                        <input
+                          {...register("tag")}
+                          type="text"
+                          value={watch("tag") || ""}
+                          onKeyUp={onKeyUp}
+                          placeholder="해시태그 입력... (엔터로 구분)"
+                        ></input>
+                      </TagBox>
+                      <ImgWrap>
+                        <div>이미지 미리보기</div>
+                        <img src={imgPath} />
+                      </ImgWrap>
+                    </ContentInput>
+                  </>
+                ) : (
+                  <>
+                    <ImgUpload>
+                      <input
+                        {...register("img")}
+                        style={{ display: "none" }}
+                        type="file"
+                        ref={inputOpenImageRef}
+                        accept="image/jpeg, image/png, image/webp"
+                        onChange={handleUploadImage}
+                      ></input>
+                      <div>
+                        {imgPath == "" ? (
+                          <>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 640 512"
+                            >
+                              <path d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z" />
+                            </svg>
+                          </>
+                        ) : (
+                          <CropWrap>
+                            <Cropper
+                              image={imgPath}
+                              crop={crop}
+                              zoom={zoom}
+                              aspect={3 / 3}
+                              onCropChange={setCrop}
+                              onCropComplete={onCropComplete}
+                              onZoomChange={setZoom}
+                              objectFit="contain"
+                            />
+                          </CropWrap>
+                        )}
+                      </div>
+                      <ImgChoice onClick={handleOpenImageRef}>
+                        컴퓨터에서 사진 선택
+                      </ImgChoice>
+                    </ImgUpload>
+                  </>
+                )}
               </Form>
             </Contents>
           </Wrap>

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import BoxView from "../components/Box/BoxView";
+import BoxViewModal from "../components/Box/BoxViewModal";
 import CreateModal from "../components/Box/CreateModal";
 import UpdateModal from "../components/Box/UpdateModal";
 import { setType } from "../redux/actions/UserAction";
@@ -88,6 +89,7 @@ function Home() {
           </Contents>
           <CreateModal />
           <UpdateModal />
+          <BoxViewModal />
         </>
       ) : (
         type === "피드백" && (

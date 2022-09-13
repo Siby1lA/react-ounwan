@@ -1,20 +1,20 @@
-import { child, ref, update } from "firebase/database";
 import { deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { dbService, fireSotreDB } from "../../firebase";
+import { fireSotreDB } from "../../firebase";
 import { setBox } from "../../redux/actions/UserAction";
 
 const Box = styled.div`
   background-color: ${(props) => props.theme.boxColor};
   width: 380px;
-  height: 550px;
+  height: 518px;
   margin: 20px;
   box-shadow: 4px 12px 30px 6px rgb(0 0 0 / 8%);
   border-radius: 20px;
   overflow: hidden;
+  cursor: pointer;
 `;
 const BoxHeader = styled.div`
   padding: 20px;
@@ -28,7 +28,7 @@ const Profile = styled.div`
 const ProfileImg = styled.img`
   width: 50px;
   height: 50px;
-  border-radius: 18px;
+  border-radius: 50%;
   margin-right: 10px;
 `;
 const BoxUserName = styled.div`
@@ -82,8 +82,7 @@ const BoxTag = styled.ul`
 `;
 const BoxImg = styled.div``;
 const UploadImg = styled.img`
-  width: 380px;
-  height: 412px;
+  width: 100%;
 `;
 const LogoWrap = styled.div`
   display: flex;
@@ -99,7 +98,7 @@ const SetLogo = styled.div`
   }
 `;
 const Ul = styled.ul`
-  background-color: white;
+  background-color: ${(props) => props.theme.bgColor};
   position: absolute;
   right: 0;
   border-radius: 5px;
@@ -175,6 +174,7 @@ function BoxContents({ data }: any) {
     navigate(`/${type}/update/${data.id}`);
   };
   return (
+    // onClick={() => navigate(`/${type}/view/${data.id}`)}
     <Box>
       <BoxHeader>
         <BoxUserName>
@@ -231,7 +231,6 @@ function BoxContents({ data }: any) {
                   )}
                 </SetLogo>
               </LogoWrap>
-
               <LikeCount>{data.likes > 0 && data.likes}</LikeCount>
             </LogoBox>
           </Profile>

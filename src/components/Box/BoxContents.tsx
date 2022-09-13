@@ -26,6 +26,9 @@ const Profile = styled.div`
   align-items: center;
 `;
 const ProfileImg = styled.img`
+  :hover {
+    transform: scale(1.1);
+  }
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -183,7 +186,12 @@ function BoxContents({ data }: any) {
       <BoxHeader>
         <BoxUserName>
           <Profile>
-            <ProfileImg src={data.createBy.image} />
+            <ProfileImg
+              onClick={() =>
+                navigate(`/${type}/userprofile/${data.createBy.uid}`)
+              }
+              src={data.createBy.image}
+            />
             <div>
               <span>{data.createBy.displayName}</span>
               <BoxTag>

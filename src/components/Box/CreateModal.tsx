@@ -107,6 +107,7 @@ const Form = styled.form`
   flex-direction: column;
   width: 100%;
   input {
+    color: ${(props) => props.theme.textColor};
     border: none;
     border: 2px solid rgba(0, 0, 0, 0.3);
     border-radius: 5px;

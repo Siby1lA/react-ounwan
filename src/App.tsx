@@ -11,6 +11,7 @@ import Header from "./components/Header";
 import { ThemeProvider } from "styled-components";
 
 import { darkTheme, lightTheme } from "./theme";
+import UserProfile from "./Routes/UserProfile";
 function App() {
   const isDarkMode = useSelector((state: any) => state.Trigger.isDarkMode);
   const navigate = useNavigate();
@@ -40,6 +41,10 @@ function App() {
             <Route path="/:type/create" element={<Home />}></Route>
             <Route path="/:type/update/:id" element={<Home />}></Route>
             <Route path="/:type/view/:id" element={<Home />}></Route>
+            <Route
+              path="/:type/userprofile/:id"
+              element={<UserProfile />}
+            ></Route>
             <Route path="/login" element={<Login />}></Route>
             <Route path="/register" element={<Register />}></Route>
             <Route path="/profile" element={<Profile />}></Route>

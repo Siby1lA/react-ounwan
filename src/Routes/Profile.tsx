@@ -23,9 +23,9 @@ import { authService, fireSotreDB, storageService } from "../firebase";
 const Wrap = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   width: 100%;
+  height: 93.1vh;
   background-color: ${(props) => props.theme.bgColor};
   span {
     font-weight: 400;
@@ -102,6 +102,7 @@ const PostTitle = styled.div`
     justify-content: center;
     align-items: center;
     li {
+      color: ${(props) => props.theme.textColor};
       cursor: pointer;
       :hover {
         transform: scale(1.1);

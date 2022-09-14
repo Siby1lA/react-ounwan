@@ -1,19 +1,17 @@
 import styled from "styled-components";
 import { PathMatch, useMatch, useNavigate } from "react-router-dom";
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useScroll } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { fireSotreDB, storageService } from "../../firebase";
 import { uid } from "uid";
-import getCroppedImg from "./cropImage";
 import {
   getDownloadURL,
   ref as strRef,
   uploadBytesResumable,
 } from "firebase/storage";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import Cropper, { Area, Point } from "react-easy-crop";
 
 const Overlay = styled.div`
   position: fixed;
@@ -37,7 +35,7 @@ const Contents = styled.div`
   background-color: ${(props) => props.theme.bgColor};
   border-radius: 10px;
   width: 625px;
-  height: 700px;
+  height: fit-content;
   /* 777px 시 vw로 변경 */
   @media screen and (max-width: 777px) {
     width: 70vw;
@@ -84,6 +82,9 @@ const ImgUpload = styled.div`
     width: 180px;
     fill: #183052;
     margin-bottom: 20px;
+  }
+  video {
+    width: 300px;
   }
 `;
 const ImgChoice = styled.div`
@@ -163,32 +164,27 @@ const Tag = styled.span`
   color: white;
   font-size: 13px;
 `;
-const CropWrap = styled.div`
-  position: relative;
-  width: 400px;
-  height: 400px;
-`;
-const ImgWrap = styled.div`
+const VideoWrap = styled.div`
   text-align: center;
   div {
     font-weight: 400;
   }
   margin-top: 30px;
   width: 380px;
-  img {
+  video {
     width: 100%;
   }
 `;
 interface UForm {
   descript: string;
   tag: string;
-  img: any;
+  video: any;
 }
-function CreateModal() {
+function FeedBackCreateModal() {
   const navigate = useNavigate();
   const { scrollY } = useScroll();
   const user = useSelector((state: any) => state.User.currentUser);
-  const [imgPath, setImgPath] = useState("");
+  const [videoPath, setVideoPath] = useState("");
   const [tagList, setTagList] = useState<any>([]);
   const [inputToggle, setInputToggle] = useState(false);
   const { register, handleSubmit, watch, setValue } = useForm<UForm>();
@@ -202,27 +198,26 @@ function CreateModal() {
     // document.body.style.overflow = "unset";
     navigate(-1);
     setValue("descript", "");
-    setImgPath("");
+    setVideoPath("");
     setTagList("");
     setValue("tag", "");
-    setValue("img", null);
+    setValue("video", null);
   };
-  const inputOpenImageRef = useRef<any>();
-  const handleOpenImageRef = () => {
-    inputOpenImageRef.current.click();
+  const inputOpenVideoRef = useRef<any>();
+  const handleOpenVideoRef = () => {
+    inputOpenVideoRef.current.click();
   };
-  const handleUploadImage = async (event: any) => {
-    setImgPath(URL.createObjectURL(event.target.files[0]));
-    // setValue("img", event.target.files[0]);
+  const handleUploadVideo = async (event: any) => {
+    setVideoPath(URL.createObjectURL(event.target.files[0]));
+    setValue("video", event.target.files[0]);
   };
   const onSubmit = async (data: UForm) => {
-    if (imgPath) {
+    if (videoPath) {
       try {
         // storage에 저장
         const uploadImg = uploadBytesResumable(
-          strRef(storageService, `health/img/${uid()}`),
-          data.img,
-          { contentType: "blob.type" }
+          strRef(storageService, `feedback/video/${uid()}`),
+          data.video
         );
         uploadImg.on(
           "state_changed",
@@ -258,11 +253,11 @@ function CreateModal() {
             // 스토리지에 저장이 된 후 DB에 저장
             // 저장된 파일을 URL로 가져오기
             getDownloadURL(uploadImg.snapshot.ref).then((downloadURL) => {
-              const postRef = collection(fireSotreDB, "health");
+              const postRef = collection(fireSotreDB, "feedback");
               addDoc(postRef, {
                 timestamp: serverTimestamp(),
                 description: data.descript,
-                image: downloadURL,
+                video: downloadURL,
                 likes: 0,
                 likes_list: [user.uid],
                 tagList: tagList,
@@ -281,10 +276,10 @@ function CreateModal() {
         console.log(error);
       }
     } else {
-      alert("이미지 를 넣어주세요");
+      alert("동영상을 넣어주세요");
     }
     setInputToggle(false);
-    setValue("img", null);
+    setValue("video", null);
   };
   const onKeyUp = (e: any) => {
     //해쉬태그 리스트에 담기
@@ -302,38 +297,15 @@ function CreateModal() {
     const filteredTagList = tagList.filter((tagItem: any) => tagItem !== data);
     setTagList(filteredTagList);
   };
-  const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
-  const onCropComplete = useCallback(
-    (croppedArea: Area, croppedAreaPixels: Area) => {
-      setCroppedAreaPixels(croppedAreaPixels);
-    },
-    []
-  );
-  const showCroppedImage = useCallback(async () => {
-    if (!imgPath) {
-      alert("이미지를 선택해주세요");
-      return;
-    }
-    try {
-      const croppedImage = await getCroppedImg(imgPath, croppedAreaPixels);
-      setValue("img", croppedImage);
-      setImgPath(URL.createObjectURL(croppedImage));
-      setInputToggle(true);
-    } catch (e) {
-      console.error(e);
-    }
-  }, [croppedAreaPixels]);
 
-  const onClose = useCallback(() => {
-    setValue("img", null);
-  }, []);
   const onBackClick = () => {
     if (inputToggle) {
       setInputToggle(false);
       return;
     }
+  };
+  const next = () => {
+    setInputToggle(true);
   };
   return (
     <>
@@ -355,12 +327,12 @@ function CreateModal() {
                       <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
                     </svg>
                   </div>
-                  <div>새 게시물 만들기</div>
+                  <div>새 피드백 글쓰기</div>
                   <div>
                     {inputToggle ? (
                       <button>공유</button>
                     ) : (
-                      <div onClick={showCroppedImage}>다음</div>
+                      <div onClick={next}>다음</div>
                     )}
                   </div>
                 </Header>
@@ -393,25 +365,25 @@ function CreateModal() {
                           placeholder="해시태그 입력... (엔터로 구분)"
                         ></input>
                       </TagBox>
-                      <ImgWrap>
-                        <div>이미지 미리보기</div>
-                        <img src={imgPath} />
-                      </ImgWrap>
+                      <VideoWrap>
+                        <div>동영상 미리보기</div>
+                        <video src={videoPath} controls />
+                      </VideoWrap>
                     </ContentInput>
                   </>
                 ) : (
                   <>
                     <ImgUpload>
                       <input
-                        {...register("img")}
+                        {...register("video")}
                         style={{ display: "none" }}
                         type="file"
-                        ref={inputOpenImageRef}
-                        accept="image/jpeg, image/png, image/webp"
-                        onChange={handleUploadImage}
+                        ref={inputOpenVideoRef}
+                        accept="video/mp4,video/mkv, video/x-m4v,video/*"
+                        onChange={handleUploadVideo}
                       ></input>
                       <div>
-                        {imgPath == "" ? (
+                        {videoPath == "" ? (
                           <>
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -421,22 +393,11 @@ function CreateModal() {
                             </svg>
                           </>
                         ) : (
-                          <CropWrap>
-                            <Cropper
-                              image={imgPath}
-                              crop={crop}
-                              zoom={zoom}
-                              aspect={3 / 3}
-                              onCropChange={setCrop}
-                              onCropComplete={onCropComplete}
-                              onZoomChange={setZoom}
-                              objectFit="contain"
-                            />
-                          </CropWrap>
+                          <video src={videoPath} controls />
                         )}
                       </div>
-                      <ImgChoice onClick={handleOpenImageRef}>
-                        컴퓨터에서 사진 선택
+                      <ImgChoice onClick={handleOpenVideoRef}>
+                        컴퓨터에서 영상 선택
                       </ImgChoice>
                     </ImgUpload>
                   </>
@@ -450,4 +411,4 @@ function CreateModal() {
   );
 }
 
-export default CreateModal;
+export default FeedBackCreateModal;

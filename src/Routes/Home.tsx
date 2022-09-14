@@ -2,11 +2,13 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
-import BoxView from "../components/Box/BoxView";
-import BoxViewModal from "../components/Box/BoxViewModal";
-import CreateModal from "../components/Box/CreateModal";
-import UpdateModal from "../components/Box/UpdateModal";
+import HealthView from "../components/healthPost/HealthView";
+import HealthViewModal from "../components/healthPost/HealthViewModal";
+import HealthCreateModal from "../components/healthPost/HealthCreateModal";
+import HealthUpdateModal from "../components/healthPost/HealthUpdateModal";
 import { setType } from "../redux/actions/UserAction";
+import FeedBackCreateModal from "../components/feedBackPost/FeedBackCreateModal";
+import FeedBackView from "../components/feedBackPost/FeedBackView";
 
 const Wrap = styled.div`
   width: 100%;
@@ -81,15 +83,15 @@ function Home() {
               <ContentTitle>오늘 운동 완료</ContentTitle>
               <Create>
                 <div onClick={() => navigate(`/${type}/create`)}>
-                  게시글 작성
+                  오운완 작성
                 </div>
               </Create>
-              <BoxView />
+              <HealthView />
             </Content>
           </Contents>
-          <CreateModal />
-          <UpdateModal />
-          <BoxViewModal />
+          <HealthCreateModal />
+          <HealthUpdateModal />
+          <HealthViewModal />
         </>
       ) : (
         type === "피드백" && (
@@ -98,18 +100,20 @@ function Home() {
               <SubHeader>
                 <Title>💪 운동 피드백</Title>
                 <SubTitle>
-                  <span>{user.displayName}</span>님 반갑습니다.
+                  <span>{user?.displayName}</span>님 반갑습니다.
                 </SubTitle>
               </SubHeader>
               <Content>
                 <ContentTitle>운동 피드백</ContentTitle>
                 <Create>
                   <div onClick={() => navigate(`/${type}/create`)}>
-                    게시글 작성
+                    피드백 작성
                   </div>
                 </Create>
+                <FeedBackView />
               </Content>
             </Contents>
+            <FeedBackCreateModal />
           </>
         )
       )}

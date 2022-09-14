@@ -149,7 +149,7 @@ interface UForm {
   tag: string;
   img: any;
 }
-function UpdateModal() {
+function HealthUpdateModal() {
   const navigate = useNavigate();
   const { type, id } = useParams();
   const { scrollY } = useScroll();
@@ -279,4 +279,4 @@ function UpdateModal() {
   );
 }
 
-export default UpdateModal;
+export default HealthUpdateModal;

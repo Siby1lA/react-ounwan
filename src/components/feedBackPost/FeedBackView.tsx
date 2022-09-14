@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { useBottomScrollListener } from "react-bottom-scroll-listener";
 import styled from "styled-components";
 import { fireSotreDB } from "../../firebase";
-import BoxContents from "./BoxContents";
+import FeedbackContents from "./FeedbackContents";
 
 const Wrap = styled.div`
   display: flex;
@@ -24,13 +24,13 @@ const Contents = styled.div`
   flex-wrap: wrap;
 `;
 
-function BoxView() {
+function FeedBackView() {
   const [healthPost, setHealthPost] = useState<any>([]);
   const [lastKey, setLastKey] = useState<any>();
 
   useEffect(() => {
     let q = query(
-      collection(fireSotreDB, "health"),
+      collection(fireSotreDB, "feedback"),
       orderBy("timestamp", "desc"),
       limit(12)
     );
@@ -46,7 +46,7 @@ function BoxView() {
   }, []);
   const addData = () => {
     let q = query(
-      collection(fireSotreDB, "health"),
+      collection(fireSotreDB, "feedback"),
       orderBy("timestamp", "desc"),
       startAfter(lastKey),
       limit(12)
@@ -69,11 +69,11 @@ function BoxView() {
             .filter((data: any) => data)
             .sort((a: any, b: any) => b.timestamp - a.timestamp)
             .map((data: any, index: any) => (
-              <BoxContents key={index} data={data} />
+              <FeedbackContents key={index} data={data} />
             ))}
       </Contents>
     </Wrap>
   );
 }
 
-export default BoxView;
+export default FeedBackView;

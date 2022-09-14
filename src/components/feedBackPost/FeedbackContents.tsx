@@ -86,8 +86,9 @@ const BoxTag = styled.ul`
     }
   }
 `;
-const BoxImg = styled.div``;
-const UploadImg = styled.img`
+
+const BoxVideo = styled.div``;
+const UploadVideo = styled.video`
   width: 100%;
 `;
 const LogoWrap = styled.div`
@@ -125,7 +126,7 @@ const Ul = styled.ul`
     }
   }
 `;
-function BoxContents({ data }: any) {
+function FeedbackContents({ data }: any) {
   const [isDropOpen, setIsDropOpen] = useState(false);
   const user = useSelector((state: any) => state.User.currentUser);
   const type = useSelector((state: any) => state.User.type);
@@ -139,7 +140,7 @@ function BoxContents({ data }: any) {
     if (!data.likes_list.includes(user?.uid)) {
       //좋아요 누름
       console.log("좋아요");
-      const postRef = doc(fireSotreDB, "health", `${data.id}`);
+      const postRef = doc(fireSotreDB, "feedback", `${data.id}`);
       setDoc(
         postRef,
         {
@@ -155,7 +156,7 @@ function BoxContents({ data }: any) {
       if (index > -1) dataList.splice(index, 1);
 
       //좋아요 취소
-      const postRef = doc(fireSotreDB, "health", `${data.id}`);
+      const postRef = doc(fireSotreDB, "feedback", `${data.id}`);
       setDoc(
         postRef,
         {
@@ -167,10 +168,10 @@ function BoxContents({ data }: any) {
     }
   };
   const onDelete = () => {
-    deleteDoc(doc(fireSotreDB, "health", `${data.id}`));
+    deleteDoc(doc(fireSotreDB, "feedback", `${data.id}`));
   };
   const onUpdate = async () => {
-    const docRef = doc(fireSotreDB, "health", `${data.id}`);
+    const docRef = doc(fireSotreDB, "feedback", `${data.id}`);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       dispatch(setBox(docSnap.data()));
@@ -181,7 +182,6 @@ function BoxContents({ data }: any) {
     navigate(`/${type}/update/${data.id}`);
   };
   return (
-    // onClick={() => navigate(`/${type}/view/${data.id}`)}
     <Box>
       <BoxHeader>
         <BoxUserName>
@@ -249,11 +249,11 @@ function BoxContents({ data }: any) {
         </BoxUserName>
         <BoxTitle>{data.description}</BoxTitle>
       </BoxHeader>
-      <BoxImg>
-        <UploadImg src={data.image} />
-      </BoxImg>
+      <BoxVideo>
+        <UploadVideo src={data.video} />
+      </BoxVideo>
     </Box>
   );
 }
 
-export default BoxContents;
+export default FeedbackContents;

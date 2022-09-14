@@ -1,18 +1,10 @@
 import styled from "styled-components";
 import { PathMatch, useMatch, useNavigate, useParams } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { useScroll } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { fireSotreDB, storageService } from "../../firebase";
-import { uid } from "uid";
-import {
-  getDownloadURL,
-  ref as strRef,
-  uploadBytesResumable,
-} from "firebase/storage";
 import { setBox } from "../../redux/actions/UserAction";
-import { doc, setDoc } from "firebase/firestore";
 
 const Overlay = styled.div`
   position: fixed;
@@ -47,7 +39,7 @@ interface UForm {
   tag: string;
   img: any;
 }
-function BoxViewModal() {
+function HealthViewModal() {
   const { type, id } = useParams();
   const navigate = useNavigate();
   const { scrollY } = useScroll();
@@ -89,4 +81,4 @@ function BoxViewModal() {
   );
 }
 
-export default BoxViewModal;
+export default HealthViewModal;

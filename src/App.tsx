@@ -20,7 +20,7 @@ function App() {
   useEffect(() => {
     authService.onAuthStateChanged((user: string) => {
       if (user) {
-        navigate("/오운완");
+        navigate("/피드백");
         dispatch(setUser(user));
       } else {
         navigate("/login");

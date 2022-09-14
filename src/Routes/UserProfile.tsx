@@ -18,6 +18,7 @@ const Wrap = styled.div`
   width: 100%;
   height: 93.1vh;
   background-color: ${(props) => props.theme.bgColor};
+  color: ${(props) => props.theme.textColor};
   span {
     font-weight: 400;
     font-size: 16px;

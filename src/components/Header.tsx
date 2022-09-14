@@ -117,7 +117,7 @@ function Header() {
         <Category>
           <ul>
             <li onClick={() => navigate(`/${"오운완"}`)}>오운완</li>
-            <li onClick={() => alert("준비중입니다.")}>피드백</li>
+            <li onClick={() => navigate(`/${"피드백"}`)}>피드백</li>
           </ul>
         </Category>
         <Set>

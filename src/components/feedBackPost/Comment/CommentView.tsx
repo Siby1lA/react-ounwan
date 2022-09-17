@@ -42,18 +42,16 @@ function CommentView() {
   return (
     <Wrap>
       <Contents>
-        {[...new Array(10)].map((data) => (
-          <Content key={data}>
-            <Img src={user.photoURL} />
-            <Msg>
-              <div>
-                <span>닉네임</span>
-                <span>2022.09.01</span>
-              </div>
-              <p>댓글 내용입니다.</p>
-            </Msg>
-          </Content>
-        ))}
+        <Content>
+          <Img src={user.photoURL} />
+          <Msg>
+            <div>
+              <span>닉네임</span>
+              <span>2022.09.01</span>
+            </div>
+            <p>댓글 내용입니다.</p>
+          </Msg>
+        </Content>
       </Contents>
     </Wrap>
   );

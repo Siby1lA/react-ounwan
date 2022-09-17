@@ -14,12 +14,15 @@ import {
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
+  getDoc,
   serverTimestamp,
   setDoc,
 } from "firebase/firestore";
 import CommentWrite from "./Comment/CommentWrite";
 import CommentView from "./Comment/CommentView";
+import { setBox } from "../../redux/actions/UserAction";
 
 const Overlay = styled.div`
   position: fixed;
@@ -74,7 +77,7 @@ const Profile = styled.div`
     font-weight: 400;
     font-size: 14px;
   }
-  border-bottom: 1px solid ${(props) => props.theme.headerColor};
+  border-bottom: 1px solid ${(props) => props.theme.borderColor};
 `;
 const ProfileImg = styled.img`
   :hover {
@@ -154,15 +157,18 @@ const Description = styled.div`
   height: 50px;
 `;
 interface UForm {
-  comment: string;
+  description: string;
 }
 function FeedBackViewModal() {
+  const [isDropOpen, setIsDropOpen] = useState(false);
+  const [onUpdateToggle, setOnUpdateToggle] = useState(false);
+  const [updateData, setUpdateData] = useState({});
   const navigate = useNavigate();
   const { scrollY } = useScroll();
   const { id } = useParams();
   const user = useSelector((state: any) => state.User.currentUser);
   const boxData = useSelector((state: any) => state.User.boxData);
-  const [isDropOpen, setIsDropOpen] = useState(false);
+
   const { register, handleSubmit, watch, setValue } = useForm<UForm>();
   const chatMatch: PathMatch<string> | null = useMatch("/:type/view/:id");
   if (chatMatch) {
@@ -173,7 +179,18 @@ function FeedBackViewModal() {
     navigate(-1);
   };
 
-  const onSubmit = async (data: UForm) => {};
+  const onSubmit = async (data: UForm) => {
+    const postRef = doc(fireSotreDB, "feedback", `${id}`);
+    setDoc(
+      postRef,
+      {
+        description: data.description,
+      },
+      { merge: true }
+    );
+    setOnUpdateToggle(false);
+    alert("수정되었습니다.");
+  };
   const onLikeClick = () => {
     if (boxData.createBy.uid === user?.uid) {
       alert("작성자 본인은 좋아요를 누룰 수 없습니다.");
@@ -209,8 +226,21 @@ function FeedBackViewModal() {
       );
     }
   };
-  const onDelete = () => {};
-  const onUpdate = async () => {};
+  const onDelete = () => {
+    deleteDoc(doc(fireSotreDB, "feedback", `${id}`));
+  };
+  const onUpdate = async () => {
+    const docRef = doc(fireSotreDB, "feedback", `${id}`);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      setOnUpdateToggle(true);
+      setValue("description", docSnap.data().description);
+    } else {
+      // doc.data() will be undefined in this case
+      console.log("No such document!");
+    }
+    // navigate(`/${type}/update/${id}`);
+  };
   return (
     <>
       {chatMatch && (
@@ -229,13 +259,13 @@ function FeedBackViewModal() {
               </LeftContents>
               <RightContents>
                 <Profile>
-                  <ProfileImg src={boxData.createBy.image} />
+                  <ProfileImg src={boxData?.createBy.image} />
                   <div>
-                    <span>{boxData.createBy.displayName}</span>
+                    <span>{boxData?.createBy.displayName}</span>
                   </div>
                   <LogoBox>
                     <LogoWrap>
-                      {boxData.likes_list.includes(user?.uid) ? (
+                      {boxData?.likes_list.includes(user?.uid) ? (
                         <LikeLogo
                           onClick={onLikeClick}
                           fill="tomato"
@@ -281,7 +311,17 @@ function FeedBackViewModal() {
                     <LikeCount>{boxData.likes > 0 && boxData.likes}</LikeCount>
                   </LogoBox>
                 </Profile>
-                <Description>{boxData.description}</Description>
+                {onUpdateToggle ? (
+                  <Description>
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                      <input {...register("description")} type="text" />
+                      <button>수정</button>
+                    </form>
+                  </Description>
+                ) : (
+                  <Description>{boxData.description}</Description>
+                )}
+
                 <CommentWrap>
                   <CommentView />
                   <CommentWrite />

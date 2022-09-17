@@ -8,14 +8,14 @@ const CommentBox = styled.div`
   bottom: 0;
 `;
 const Comment = styled.div`
-  border-top: 1px solid ${(props) => props.theme.headerColor};
+  border-top: 1px solid ${(props) => props.theme.borderColor};
   form {
     padding: 5px;
     display: flex;
     align-items: center;
     input {
       border: none;
-      width: 90%;
+      width: 80%;
       padding: 10px;
       background-color: ${(props) => props.theme.bgColor};
       &:focus {
@@ -23,11 +23,10 @@ const Comment = styled.div`
       }
       color: ${(props) => props.theme.textColor};
     }
-    div {
-      width: 10%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    button {
+      background-color: ${(props) => props.theme.bgColor};
+      border: none;
+      width: 15%;
       color: #0095f6;
       font-weight: 400;
       font-size: 14px;
@@ -51,12 +50,7 @@ function CommentWrite() {
     setValue,
     formState: { errors },
   } = useForm<ICommentWrite>();
-  const onSubmit = ({ comment }: any) => {
-    console.log(comment);
-  };
-  const handleChange = (e: any) => {
-    setValue("comment", e.target.value);
-  };
+  const onSubmit = (data: ICommentWrite) => {};
 
   return (
     <CommentBox>
@@ -68,7 +62,7 @@ function CommentWrite() {
             type="text"
             placeholder="피드백 달기..."
           />
-          <div onClick={onSubmit}>게시</div>
+          <button>게시</button>
         </form>
       </Comment>
     </CommentBox>

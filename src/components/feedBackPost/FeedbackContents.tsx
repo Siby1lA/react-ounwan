@@ -1,4 +1,12 @@
-import { deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  onSnapshot,
+  query,
+  setDoc,
+} from "firebase/firestore";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -157,6 +165,7 @@ function FeedbackContents({ data }: any) {
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       dispatch(setBox(docSnap.data()));
+      console.log(docSnap.data());
     } else {
       // doc.data() will be undefined in this case
       console.log("No such document!");
@@ -164,14 +173,10 @@ function FeedbackContents({ data }: any) {
     navigate(`/${type}/update/${data.id}`);
   };
   const onClickVideo = async () => {
-    const docRef = doc(fireSotreDB, "feedback", `${data.id}`);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      dispatch(setBox(docSnap.data()));
-    } else {
-      // doc.data() will be undefined in this case
-      console.log("No such document!");
-    }
+    //실시간
+    onSnapshot(doc(fireSotreDB, "feedback", `${data.id}`), (doc) => {
+      dispatch(setBox(doc.data()));
+    });
     navigate(`/${type}/view/${data.id}`);
   };
   return (

@@ -77,7 +77,7 @@ const ImgUpload = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 650px;
+  margin: 20px 0px;
   svg {
     width: 180px;
     fill: #183052;
@@ -172,7 +172,7 @@ const VideoWrap = styled.div`
   margin-top: 30px;
   width: 380px;
   video {
-    width: 100%;
+    width: 250px;
   }
 `;
 interface UForm {

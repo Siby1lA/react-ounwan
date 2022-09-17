@@ -8,8 +8,8 @@ import { setBox } from "../../redux/actions/UserAction";
 
 const Box = styled.div`
   background-color: ${(props) => props.theme.boxColor};
-  width: 380px;
-  height: 518px;
+  width: fit-content;
+  height: fit-content;
   margin: 20px;
   box-shadow: 4px 12px 30px 6px rgb(0 0 0 / 8%);
   border-radius: 20px;
@@ -17,9 +17,8 @@ const Box = styled.div`
   cursor: pointer;
 `;
 const BoxHeader = styled.div`
-  padding: 20px;
+  padding: 15px;
   position: relative;
-  /* margin-bottom: 5px; */
 `;
 const Profile = styled.div`
   display: flex;
@@ -29,19 +28,18 @@ const ProfileImg = styled.img`
   :hover {
     transform: scale(1.1);
   }
-  width: 50px;
-  height: 50px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
-  margin-right: 10px;
+  margin-right: 7px;
 `;
 const BoxUserName = styled.div`
   display: flex;
   span {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 400;
     border-radius: 10px;
   }
-  margin-bottom: 20px;
 `;
 const LogoBox = styled.div`
   position: absolute;
@@ -50,57 +48,41 @@ const LogoBox = styled.div`
   margin: 15px;
 `;
 const LikeLogo = styled.svg`
-  width: 25px;
+  width: 20px;
   margin-bottom: 3px;
   cursor: pointer;
   :first-child {
-    width: 25px;
+    width: 20px;
     :hover {
       fill: red;
     }
   }
 `;
 const LikeCount = styled.div`
-  font-size: 12px;
+  font-size: 8px;
   text-align: center;
-  margin-top: 3px;
-  margin-right: 25px;
-`;
-const BoxTitle = styled.h1`
-  font-weight: 400;
-  margin-bottom: 10px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`;
-const BoxTag = styled.ul`
-  display: flex;
-  margin-top: 5px;
-  li {
-    font-size: 14px;
-    font-weight: 400;
-    color: gray;
-    margin-right: 5px;
-    :last-child {
-      margin-right: 0px;
-    }
-  }
+  margin-top: -5px;
+  margin-right: 20px;
 `;
 
-const BoxVideo = styled.div``;
+const BoxVideo = styled.div`
+  display: flex;
+  justify-content: center;
+  padding: 15px;
+`;
 const UploadVideo = styled.video`
-  width: 100%;
+  width: 250px;
 `;
 const LogoWrap = styled.div`
   display: flex;
   align-items: center;
 `;
 const SetLogo = styled.div`
-  margin-left: 10px;
+  margin-left: 5px;
   position: relative;
   padding: 5px;
   svg {
-    width: 5px;
+    width: 4px;
     cursor: pointer;
     fill: ${(props) => props.theme.textColor};
   }
@@ -181,6 +163,17 @@ function FeedbackContents({ data }: any) {
     }
     navigate(`/${type}/update/${data.id}`);
   };
+  const onClickVideo = async () => {
+    const docRef = doc(fireSotreDB, "feedback", `${data.id}`);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      dispatch(setBox(docSnap.data()));
+    } else {
+      // doc.data() will be undefined in this case
+      console.log("No such document!");
+    }
+    navigate(`/${type}/view/${data.id}`);
+  };
   return (
     <Box>
       <BoxHeader>
@@ -194,12 +187,6 @@ function FeedbackContents({ data }: any) {
             />
             <div>
               <span>{data.createBy.displayName}</span>
-              <BoxTag>
-                {data.tagList &&
-                  data.tagList.map((tag: string, index: number) => (
-                    <li key={index}>#{tag}</li>
-                  ))}
-              </BoxTag>
             </div>
             <LogoBox>
               <LogoWrap>
@@ -247,9 +234,8 @@ function FeedbackContents({ data }: any) {
             </LogoBox>
           </Profile>
         </BoxUserName>
-        <BoxTitle>{data.description}</BoxTitle>
       </BoxHeader>
-      <BoxVideo>
+      <BoxVideo onClick={onClickVideo}>
         <UploadVideo src={data.video} />
       </BoxVideo>
     </Box>

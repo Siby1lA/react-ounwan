@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import HealthView from "../components/healthPost/HealthView";
-import HealthViewModal from "../components/healthPost/HealthViewModal";
+import FeedBackViewModal from "../components/feedBackPost/FeedBackViewModal";
 import HealthCreateModal from "../components/healthPost/HealthCreateModal";
 import HealthUpdateModal from "../components/healthPost/HealthUpdateModal";
 import { setType } from "../redux/actions/UserAction";
@@ -91,7 +91,6 @@ function Home() {
           </Contents>
           <HealthCreateModal />
           <HealthUpdateModal />
-          <HealthViewModal />
         </>
       ) : (
         type === "피드백" && (
@@ -114,6 +113,7 @@ function Home() {
               </Content>
             </Contents>
             <FeedBackCreateModal />
+            <FeedBackViewModal />
           </>
         )
       )}

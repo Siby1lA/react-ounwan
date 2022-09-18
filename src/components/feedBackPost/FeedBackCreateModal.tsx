@@ -134,36 +134,6 @@ const UserInfo = styled.div`
   }
 `;
 
-const TagBox = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  min-height: 50px;
-  margin: 10px;
-  padding: 0 10px;
-  border: 2px solid rgba(0, 0, 0, 0.3);
-  border-radius: 10px;
-  input {
-    display: inline-flex;
-    min-width: 150px;
-    background: transparent;
-    border: none;
-    outline: none;
-    cursor: text;
-  }
-`;
-const Tag = styled.span`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 5px;
-  padding: 5px;
-  background-color: tomato;
-  border-radius: 5px;
-  color: white;
-  font-size: 13px;
-`;
 const VideoWrap = styled.div`
   text-align: center;
   div {

@@ -76,7 +76,7 @@ function Home() {
             <SubHeader>
               <Title>💪 오늘의 운동 완료!</Title>
               <SubTitle>
-                <span>{user?.displayName}</span>님 반갑습니다.
+                <span>{user?.displayName}</span>님 환영합니다.
               </SubTitle>
             </SubHeader>
             <Content>
@@ -99,7 +99,7 @@ function Home() {
               <SubHeader>
                 <Title>💪 운동 피드백</Title>
                 <SubTitle>
-                  <span>{user?.displayName}</span>님 반갑습니다.
+                  <span>{user?.displayName}</span>님 환영합니다 .
                 </SubTitle>
               </SubHeader>
               <Content>

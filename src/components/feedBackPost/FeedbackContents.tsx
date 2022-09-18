@@ -1,13 +1,4 @@
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDoc,
-  onSnapshot,
-  query,
-  setDoc,
-} from "firebase/firestore";
-import { useState } from "react";
+import { doc, onSnapshot, setDoc } from "firebase/firestore";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";

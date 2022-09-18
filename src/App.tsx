@@ -3,7 +3,7 @@ import Home from "./Routes/Home";
 import Login from "./Routes/Auth/Login";
 import Register from "./Routes/Auth/Register";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { authService } from "./firebase";
 import { clearUser, setUser } from "./redux/actions/UserAction";
 import Profile from "./Routes/Profile";
@@ -22,7 +22,7 @@ function App() {
   useEffect(() => {
     authService.onAuthStateChanged((user: string) => {
       if (user) {
-        navigate("/피드백");
+        navigate("/오운완");
         dispatch(setUser(user));
       } else {
         navigate("/login");

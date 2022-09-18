@@ -1,7 +1,6 @@
 import { deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { fireSotreDB } from "../../firebase";

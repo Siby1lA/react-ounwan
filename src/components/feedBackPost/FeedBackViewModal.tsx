@@ -1,28 +1,14 @@
 import styled from "styled-components";
 import { PathMatch, useMatch, useNavigate, useParams } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useScroll } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-import { fireSotreDB, storageService } from "../../firebase";
-import { uid } from "uid";
-import {
-  getDownloadURL,
-  ref as strRef,
-  uploadBytesResumable,
-} from "firebase/storage";
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  getDoc,
-  serverTimestamp,
-  setDoc,
-} from "firebase/firestore";
+import { fireSotreDB } from "../../firebase";
+
+import { deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
 import CommentWrite from "./Comment/CommentWrite";
 import CommentView from "./Comment/CommentView";
-import { setBox } from "../../redux/actions/UserAction";
 
 const Overlay = styled.div`
   position: fixed;

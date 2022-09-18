@@ -37,8 +37,7 @@ const Contents = styled.div`
   background-color: ${(props) => props.theme.bgColor};
   border-radius: 10px;
   width: 625px;
-  height: 700px;
-  /* 777px 시 vw로 변경 */
+  height: fit-content; /* 777px 시 vw로 변경 */
   @media screen and (max-width: 777px) {
     width: 70vw;
   }
@@ -79,7 +78,7 @@ const ImgUpload = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 650px;
+  height: 500px;
   svg {
     width: 180px;
     fill: #183052;

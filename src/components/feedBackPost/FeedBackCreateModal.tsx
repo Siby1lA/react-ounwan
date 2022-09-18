@@ -260,12 +260,12 @@ function FeedBackCreateModal() {
                 video: downloadURL,
                 likes: 0,
                 likes_list: [user.uid],
-                tagList: tagList,
                 createBy: {
                   displayName: user.displayName,
                   image: user.photoURL,
                   uid: user.uid,
                 },
+                comment: [],
               });
             });
           }
@@ -280,22 +280,6 @@ function FeedBackCreateModal() {
     }
     setInputToggle(false);
     setValue("video", null);
-  };
-  const onKeyUp = (e: any) => {
-    //해쉬태그 리스트에 담기
-    if (e.target.value.length !== 0 && e.key === "Enter") {
-      let updatedTagList = [...tagList];
-      updatedTagList.push(e.target.value);
-      setTagList(updatedTagList);
-      setValue("tag", "");
-    }
-  };
-  const checkKeyDown = (e: any) => {
-    if (e.code === "Enter") e.preventDefault();
-  };
-  const onTagDel = (data: string) => {
-    const filteredTagList = tagList.filter((tagItem: any) => tagItem !== data);
-    setTagList(filteredTagList);
   };
 
   const onBackClick = () => {
@@ -314,10 +298,7 @@ function FeedBackCreateModal() {
           <Overlay onClick={onOverlayClick} key={1} />
           <Wrap>
             <Contents style={{ top: scrollY.get() + 80 }}>
-              <Form
-                onSubmit={handleSubmit(onSubmit)}
-                onKeyDown={(e) => checkKeyDown(e)}
-              >
+              <Form onSubmit={handleSubmit(onSubmit)}>
                 <Header>
                   <div onClick={inputToggle ? onBackClick : onOverlayClick}>
                     <svg
@@ -350,21 +331,7 @@ function FeedBackCreateModal() {
                         type="text"
                         placeholder="내용 입력... (22자 미만)"
                       />
-                      <TagBox>
-                        {tagList &&
-                          tagList.map((data: string, index: number) => (
-                            <Tag key={index} onClick={() => onTagDel(data)}>
-                              {data}
-                            </Tag>
-                          ))}
-                        <input
-                          {...register("tag")}
-                          type="text"
-                          value={watch("tag") || ""}
-                          onKeyUp={onKeyUp}
-                          placeholder="해시태그 입력... (엔터로 구분)"
-                        ></input>
-                      </TagBox>
+
                       <VideoWrap>
                         <div>동영상 미리보기</div>
                         <video src={videoPath} controls />

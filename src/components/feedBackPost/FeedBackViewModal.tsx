@@ -243,7 +243,7 @@ function FeedBackViewModal() {
   };
   return (
     <>
-      {chatMatch && (
+      {chatMatch && boxData && (
         <>
           <Overlay onClick={onOverlayClick} key={1} />
           <Wrap>
@@ -308,7 +308,9 @@ function FeedBackViewModal() {
                         )}
                       </SetLogo>
                     </LogoWrap>
-                    <LikeCount>{boxData.likes > 0 && boxData.likes}</LikeCount>
+                    <LikeCount>
+                      {boxData?.likes > 0 && boxData?.likes}
+                    </LikeCount>
                   </LogoBox>
                 </Profile>
                 {onUpdateToggle ? (

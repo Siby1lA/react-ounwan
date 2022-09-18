@@ -17,7 +17,7 @@ import { setBox } from "../../redux/actions/UserAction";
 const Box = styled.div`
   background-color: ${(props) => props.theme.boxColor};
   width: fit-content;
-  height: fit-content;
+  height: 350px;
   margin: 20px;
   box-shadow: 4px 12px 30px 6px rgb(0 0 0 / 8%);
   border-radius: 20px;
@@ -69,14 +69,11 @@ const LikeLogo = styled.svg`
 const LikeCount = styled.div`
   font-size: 8px;
   text-align: center;
-  margin-top: -5px;
-  margin-right: 20px;
 `;
 
 const BoxVideo = styled.div`
   display: flex;
   justify-content: center;
-  padding: 15px;
 `;
 const UploadVideo = styled.video`
   width: 250px;
@@ -85,39 +82,8 @@ const LogoWrap = styled.div`
   display: flex;
   align-items: center;
 `;
-const SetLogo = styled.div`
-  margin-left: 5px;
-  position: relative;
-  padding: 5px;
-  svg {
-    width: 4px;
-    cursor: pointer;
-    fill: ${(props) => props.theme.textColor};
-  }
-`;
-const Ul = styled.ul`
-  background-color: ${(props) => props.theme.bgColor};
-  position: absolute;
-  right: 0;
-  border-radius: 5px;
-  margin-top: 5px;
-  border: 2px solid #eee;
-  width: 100px;
-  li {
-    padding: 10px;
-    font-size: 14px;
-    font-weight: 300;
-    cursor: pointer;
-    :first-child {
-      border-bottom: 2px solid #eee;
-    }
-    :hover {
-      background-color: #eee;
-    }
-  }
-`;
+
 function FeedbackContents({ data }: any) {
-  const [isDropOpen, setIsDropOpen] = useState(false);
   const user = useSelector((state: any) => state.User.currentUser);
   const type = useSelector((state: any) => state.User.type);
   const navigate = useNavigate();
@@ -157,21 +123,7 @@ function FeedbackContents({ data }: any) {
       );
     }
   };
-  const onDelete = () => {
-    deleteDoc(doc(fireSotreDB, "feedback", `${data.id}`));
-  };
-  const onUpdate = async () => {
-    const docRef = doc(fireSotreDB, "feedback", `${data.id}`);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      dispatch(setBox(docSnap.data()));
-      console.log(docSnap.data());
-    } else {
-      // doc.data() will be undefined in this case
-      console.log("No such document!");
-    }
-    navigate(`/${type}/update/${data.id}`);
-  };
+
   const onClickVideo = async () => {
     //실시간
     onSnapshot(doc(fireSotreDB, "feedback", `${data.id}`), (doc) => {
@@ -214,26 +166,6 @@ function FeedbackContents({ data }: any) {
                     <path d="M244 84L255.1 96L267.1 84.02C300.6 51.37 347 36.51 392.6 44.1C461.5 55.58 512 115.2 512 185.1V190.9C512 232.4 494.8 272.1 464.4 300.4L283.7 469.1C276.2 476.1 266.3 480 256 480C245.7 480 235.8 476.1 228.3 469.1L47.59 300.4C17.23 272.1 0 232.4 0 190.9V185.1C0 115.2 50.52 55.58 119.4 44.1C164.1 36.51 211.4 51.37 244 84C243.1 84 244 84.01 244 84L244 84zM255.1 163.9L210.1 117.1C188.4 96.28 157.6 86.4 127.3 91.44C81.55 99.07 48 138.7 48 185.1V190.9C48 219.1 59.71 246.1 80.34 265.3L256 429.3L431.7 265.3C452.3 246.1 464 219.1 464 190.9V185.1C464 138.7 430.4 99.07 384.7 91.44C354.4 86.4 323.6 96.28 301.9 117.1L255.1 163.9z" />
                   </LikeLogo>
                 )}
-                <SetLogo onClick={() => setIsDropOpen((prev) => !prev)}>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 512">
-                    <path d="M64 360c30.9 0 56 25.1 56 56s-25.1 56-56 56s-56-25.1-56-56s25.1-56 56-56zm0-160c30.9 0 56 25.1 56 56s-25.1 56-56 56s-56-25.1-56-56s25.1-56 56-56zM120 96c0 30.9-25.1 56-56 56S8 126.9 8 96S33.1 40 64 40s56 25.1 56 56z" />
-                  </svg>
-                  {isDropOpen && (
-                    <Ul>
-                      {data.createBy.uid === user.uid ? (
-                        <>
-                          <li onClick={onUpdate}>게시글 수정</li>
-                          <li onClick={onDelete}>게시글 삭제</li>
-                        </>
-                      ) : (
-                        <>
-                          <li>작성자 정보</li>
-                          <li>작성자 신고</li>
-                        </>
-                      )}
-                    </Ul>
-                  )}
-                </SetLogo>
               </LogoWrap>
               <LikeCount>{data.likes > 0 && data.likes}</LikeCount>
             </LogoBox>

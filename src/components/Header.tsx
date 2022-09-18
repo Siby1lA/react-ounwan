@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -104,6 +104,7 @@ function Header() {
   const dispatch = useDispatch();
   const isDropOpen = useSelector((state: any) => state.Trigger.isDropOpen);
   const isDarkMode = useSelector((state: any) => state.Trigger.isDarkMode);
+
   const user = useSelector((state: any) => state.User.currentUser);
   const outsideRef = useOutSideRef();
   const onLogout = () => {

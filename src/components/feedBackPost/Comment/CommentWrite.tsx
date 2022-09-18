@@ -1,6 +1,9 @@
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
+import { fireSotreDB } from "../../../firebase";
 
 const CommentBox = styled.div`
   width: 100%;
@@ -43,6 +46,8 @@ interface ICommentWrite {
 }
 function CommentWrite() {
   const user = useSelector((state: any) => state.User.currentUser);
+  const { id } = useParams();
+  const boxData = useSelector((state: any) => state.User.boxData);
   const {
     register,
     handleSubmit,
@@ -50,7 +55,28 @@ function CommentWrite() {
     setValue,
     formState: { errors },
   } = useForm<ICommentWrite>();
-  const onSubmit = (data: ICommentWrite) => {};
+  const onSubmit = async (data: ICommentWrite) => {
+    setValue("comment", "");
+    const postRef = doc(fireSotreDB, "feedback", `${id}`);
+    await setDoc(
+      postRef,
+      {
+        comment: [
+          ...boxData.comment,
+          {
+            timestamp: new Date(),
+            comment: data.comment,
+            createBy: {
+              displayName: user.displayName,
+              image: user.photoURL,
+              uid: user.uid,
+            },
+          },
+        ],
+      },
+      { merge: true }
+    );
+  };
 
   return (
     <CommentBox>

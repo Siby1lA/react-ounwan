@@ -25,7 +25,7 @@ const Wrap = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-  height: 93.1vh;
+  height: fit-content;
   background-color: ${(props) => props.theme.bgColor};
   span {
     font-weight: 400;
@@ -80,7 +80,6 @@ const Create = styled.div`
 const PostWrap = styled.div`
   width: 80vw;
   border-top: 1px solid #eee;
-  margin-top: 40px;
   text-align: center;
 `;
 const Posts = styled.div`
@@ -120,6 +119,21 @@ const Post = styled.div`
   img {
     width: 280px;
   }
+  video {
+    width: 160px;
+  }
+`;
+const Category = styled.div`
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  div {
+    font-size: 18px;
+    padding: 10px;
+    font-weight: 400;
+    color: ${(props) => props.theme.textColor};
+    cursor: pointer;
+  }
 `;
 interface UForm {
   nickname: string;
@@ -129,10 +143,14 @@ interface UForm {
 function Profile() {
   const user = useSelector((state: any) => state.User.currentUser);
   const [imgPath, setImgPath] = useState("");
-  const [postData, setPostData] = useState<any>(null);
-  const [likeData, setLikeData] = useState<any>(null);
+  const [healthData, setHealthData] = useState<any>(null);
+  const [feedBackData, setFeedBackData] = useState<any>(null);
+  const [healthLikeData, setHealthLikeData] = useState<any>(null);
+  const [feedBackLikeData, setFeedBackLikeData] = useState<any>(null);
+  const [onHealthLike, setOnHealthLike] = useState<any>(true);
+  const [onFeedBackLike, setOnFeedBackLike] = useState<any>(true);
   const [userName, setUserName] = useState(user?.displayName);
-  const [onLike, setOnLike] = useState<any>(true);
+
   const navigate = useNavigate();
   const { register, handleSubmit, watch, setValue } = useForm<UForm>();
   const inputOpenImageRef = useRef<any>();
@@ -144,6 +162,7 @@ function Profile() {
     getUserPosts();
   }, []);
   const getUserPosts = async () => {
+    // 오운완 게시글
     let healthData = query(
       collection(fireSotreDB, "health"),
       orderBy("timestamp", "desc")
@@ -157,29 +176,64 @@ function Profile() {
       const filterData = list.filter(
         (data: any) => data.createBy.uid === user.uid
       );
-      setPostData(filterData);
+      setHealthData(filterData);
     });
-  };
-  const getLikePosts = async () => {
-    //좋아요 누른 게시글
-    let healthData = query(
-      collection(fireSotreDB, "health"),
+    // 피드백 게시글
+    let feedBackData = query(
+      collection(fireSotreDB, "feedback"),
       orderBy("timestamp", "desc")
     );
-    onSnapshot(healthData, (snapShot) => {
+    onSnapshot(feedBackData, (snapShot) => {
       const list: any = snapShot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
+      // 내 게시글
       const filterData = list.filter(
-        (data: any) => data.createBy.uid !== user.uid
+        (data: any) => data.createBy.uid === user.uid
       );
-      const filterData2 = filterData.filter((data: any) =>
-        data.likes_list.includes(user.uid)
-      );
-
-      setLikeData(filterData2);
+      setFeedBackData(filterData);
     });
+  };
+  const getLikePosts = async (type: string) => {
+    //좋아요 누른 게시글
+    if (type === "health") {
+      let healthData = query(
+        collection(fireSotreDB, "health"),
+        orderBy("timestamp", "desc")
+      );
+      onSnapshot(healthData, (snapShot) => {
+        const list: any = snapShot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        const filterData = list.filter(
+          (data: any) => data.createBy.uid !== user.uid
+        );
+        const filterData2 = filterData.filter((data: any) =>
+          data.likes_list.includes(user.uid)
+        );
+        setHealthLikeData(filterData2);
+      });
+    } else {
+      let feedBackData = query(
+        collection(fireSotreDB, "feedback"),
+        orderBy("timestamp", "desc")
+      );
+      onSnapshot(feedBackData, (snapShot) => {
+        const list: any = snapShot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        const filterData = list.filter(
+          (data: any) => data.createBy.uid !== user.uid
+        );
+        const filterData2 = filterData.filter((data: any) =>
+          data.likes_list.includes(user.uid)
+        );
+        setFeedBackLikeData(filterData2);
+      });
+    }
   };
   const handleOpenImageRef = async () => {
     inputOpenImageRef.current.click();
@@ -362,12 +416,15 @@ function Profile() {
           <button>제출</button>
         </Create>
       </form>
+      <Category>
+        <div>오운완</div>
+      </Category>
       <PostWrap>
         <PostTitle>
           <ul>
             <li
               onClick={() => {
-                setOnLike(true);
+                setOnHealthLike(true);
                 getUserPosts();
               }}
             >
@@ -375,8 +432,8 @@ function Profile() {
             </li>
             <li
               onClick={() => {
-                setOnLike(false);
-                getLikePosts();
+                setOnHealthLike(false);
+                getLikePosts("health");
               }}
             >
               좋아요
@@ -384,17 +441,58 @@ function Profile() {
           </ul>
         </PostTitle>
         <Posts>
-          {onLike
-            ? postData &&
-              postData.map((data: any, index: number) => (
+          {onHealthLike
+            ? healthData &&
+              healthData.map((data: any, index: number) => (
                 <Post key={index}>
                   <img src={data.image} />
                 </Post>
               ))
-            : likeData &&
-              likeData.map((data: any, index: number) => (
+            : healthLikeData &&
+              healthLikeData.map((data: any, index: number) => (
                 <Post key={index}>
                   <img src={data.image} />
+                </Post>
+              ))}
+        </Posts>
+      </PostWrap>
+
+      <Category>
+        <div>피드백</div>
+      </Category>
+      <PostWrap>
+        <PostTitle>
+          <ul>
+            <li
+              onClick={() => {
+                setOnFeedBackLike(true);
+                getUserPosts();
+              }}
+            >
+              게시글
+            </li>
+            <li
+              onClick={() => {
+                setOnFeedBackLike(false);
+                getLikePosts("feedback");
+              }}
+            >
+              좋아요
+            </li>
+          </ul>
+        </PostTitle>
+        <Posts>
+          {onFeedBackLike
+            ? feedBackData &&
+              feedBackData.map((data: any, index: number) => (
+                <Post key={index}>
+                  <video src={data.video} />
+                </Post>
+              ))
+            : feedBackLikeData &&
+              feedBackLikeData.map((data: any, index: number) => (
+                <Post key={index}>
+                  <video src={data.video} />
                 </Post>
               ))}
         </Posts>

@@ -15,11 +15,12 @@ import {
 } from "firebase/storage";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { uid } from "uid";
 import { authService, fireSotreDB, storageService } from "../firebase";
+import { setBox } from "../redux/actions/UserAction";
 const Wrap = styled.div`
   display: flex;
   flex-direction: column;
@@ -121,6 +122,7 @@ const Post = styled.div`
   }
   video {
     width: 160px;
+    cursor: pointer;
   }
 `;
 const Category = styled.div`
@@ -150,14 +152,13 @@ function Profile() {
   const [onHealthLike, setOnHealthLike] = useState<any>(true);
   const [onFeedBackLike, setOnFeedBackLike] = useState<any>(true);
   const [userName, setUserName] = useState(user?.displayName);
-
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { register, handleSubmit, watch, setValue } = useForm<UForm>();
   const inputOpenImageRef = useRef<any>();
   useEffect(() => {
     setValue("nickname", user?.displayName);
     setValue("img", user?.photoURL);
-
     //유저 게시글 불러오기
     getUserPosts();
   }, []);
@@ -383,13 +384,18 @@ function Profile() {
       alert("변경되었습니다.");
     }
   };
-
+  const onClickVideo = async (id: any) => {
+    //실시간
+    onSnapshot(doc(fireSotreDB, "feedback", `${id}`), (doc) => {
+      dispatch(setBox(doc.data()));
+    });
+    navigate(`/피드백/view/${id}`);
+  };
   return (
     <Wrap>
       <form onSubmit={handleSubmit(onSubmit)}>
         <FristWrap>
           {imgPath ? <img src={imgPath} /> : <img src={user?.photoURL} />}
-
           <Content>
             <span>{userName}</span>
             <div onClick={handleOpenImageRef}>프로필 사진 바꾸기</div>
@@ -486,13 +492,19 @@ function Profile() {
             ? feedBackData &&
               feedBackData.map((data: any, index: number) => (
                 <Post key={index}>
-                  <video src={data.video} />
+                  <video
+                    onClick={() => onClickVideo(data.id)}
+                    src={data.video}
+                  />
                 </Post>
               ))
             : feedBackLikeData &&
               feedBackLikeData.map((data: any, index: number) => (
                 <Post key={index}>
-                  <video src={data.video} />
+                  <video
+                    onClick={() => onClickVideo(data.id)}
+                    src={data.video}
+                  />
                 </Post>
               ))}
         </Posts>

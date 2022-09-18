@@ -7,16 +7,18 @@ import {
   query,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { fireSotreDB } from "../firebase";
+import { setBox } from "../redux/actions/UserAction";
 
 const Wrap = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  height: 93.1vh;
+  height: fit-content;
   background-color: ${(props) => props.theme.bgColor};
   color: ${(props) => props.theme.textColor};
   span {
@@ -43,16 +45,9 @@ const Content = styled.div`
     color: #0095f6;
   }
 `;
-const SecondWrap = styled.div`
-  margin: 15px 0px;
-  span {
-    margin-right: 20px;
-  }
-`;
 
 const PostWrap = styled.div`
   width: 80vw;
-  border-top: 1px solid #eee;
   margin-top: 40px;
   text-align: center;
 `;
@@ -65,6 +60,7 @@ const Posts = styled.div`
   flex-wrap: wrap;
 `;
 const PostTitle = styled.div`
+  border-top: 1px solid #eee;
   font-weight: 400;
   margin-top: 10px;
   display: flex;
@@ -93,11 +89,18 @@ const Post = styled.div`
   img {
     width: 280px;
   }
+  video {
+    width: 160px;
+    cursor: pointer;
+  }
 `;
 function UserProfile() {
   const { type, id } = useParams();
   const [userInfo, setUserInfo] = useState<any>(null);
-  const [postData, setPostData] = useState<any>(null);
+  const [healthData, setHealthData] = useState<any>(null);
+  const [feedBackData, setFeedBackData] = useState<any>(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   useEffect(() => {
     //유저 정보 불러오기
     getUserInfo();
@@ -127,11 +130,31 @@ function UserProfile() {
         id: doc.id,
         ...doc.data(),
       }));
-      // 내 게시글
+      // 유저 게시글
       const filterData = list.filter((data: any) => data.createBy.uid === id);
-
-      setPostData(filterData);
+      setHealthData(filterData);
     });
+    let feedBackData = query(
+      collection(fireSotreDB, "feedback"),
+      orderBy("timestamp", "desc")
+    );
+    onSnapshot(feedBackData, (snapShot) => {
+      const list: any = snapShot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      // 유저 게시글
+      const filterData = list.filter((data: any) => data.createBy.uid === id);
+      setFeedBackData(filterData);
+    });
+  };
+
+  const onClickVideo = async (id: any) => {
+    //실시간
+    onSnapshot(doc(fireSotreDB, "feedback", `${id}`), (doc) => {
+      dispatch(setBox(doc.data()));
+    });
+    navigate(`/${type}/view/${id}`);
   };
   return (
     <Wrap>
@@ -144,14 +167,27 @@ function UserProfile() {
       <PostWrap>
         <PostTitle>
           <ul>
-            <li>게시글</li>
+            <li>오운완</li>
           </ul>
         </PostTitle>
         <Posts>
-          {postData &&
-            postData.map((data: any, index: number) => (
+          {healthData &&
+            healthData.map((data: any, index: number) => (
               <Post key={index}>
                 <img src={data.image} />
+              </Post>
+            ))}
+        </Posts>
+        <PostTitle>
+          <ul>
+            <li>피드백</li>
+          </ul>
+        </PostTitle>
+        <Posts>
+          {feedBackData &&
+            feedBackData.map((data: any, index: number) => (
+              <Post key={index}>
+                <video onClick={() => onClickVideo(data.id)} src={data.video} />
               </Post>
             ))}
         </Posts>

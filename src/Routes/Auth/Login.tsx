@@ -35,6 +35,7 @@ const Header = styled.h1`
 const Box = styled.div`
   position: relative;
   padding: 30px;
+
   border-radius: 10px;
   box-shadow: 0 13px 27px -5px rgba(50, 50, 93, 0.25),
     0 8px 16px -8px rgba(0, 0, 0, 0.1), 0 -6px 16px -6px rgba(0, 0, 0, 0.025);
@@ -48,6 +49,9 @@ const Box = styled.div`
     input {
       width: 370px;
       height: 40px;
+      @media screen and (max-width: 587px) {
+        width: 65vw;
+      }
       margin-bottom: 10px;
       border: 2px solid #4e5154;
       border-radius: 5px;
@@ -55,8 +59,13 @@ const Box = styled.div`
       }
     }
     button {
+      width: 100%;
       margin-top: 15px;
       background-color: #4e5154;
+      @media screen and (max-width: 587px) {
+        width: 65vw;
+        height: 45px;
+      }
     }
   }
 `;
@@ -71,6 +80,10 @@ const Footer = styled.div`
     margin-top: 30px;
     button {
       width: 330px;
+      @media screen and (max-width: 587px) {
+        width: 55vw;
+        height: 45px;
+      }
       :first-child {
         background-color: #616161;
       }

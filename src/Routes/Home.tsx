@@ -20,7 +20,6 @@ const Wrap = styled.div`
 `;
 const Contents = styled.div`
   width: 90%;
-  min-width: 550px;
   margin-bottom: 50px;
 `;
 const SubHeader = styled.div`
@@ -30,6 +29,9 @@ const Title = styled.h1`
   font-size: 46px;
   font-weight: 600;
   margin-bottom: 20px;
+  @media screen and (max-width: 583px) {
+    font-size: 42px;
+  }
 `;
 const SubTitle = styled.h2`
   font-size: 40px;

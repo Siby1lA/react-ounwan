@@ -37,9 +37,9 @@ const Contents = styled.div`
   background-color: ${(props) => props.theme.bgColor};
   border-radius: 10px;
   width: 625px;
-  height: fit-content; /* 777px 시 vw로 변경 */
+  height: fit-content;
   @media screen and (max-width: 777px) {
-    width: 70vw;
+    width: 70%;
   }
 `;
 const Header = styled.div`
@@ -166,6 +166,10 @@ const CropWrap = styled.div`
   position: relative;
   width: 400px;
   height: 400px;
+  @media screen and (max-width: 583px) {
+    width: 60vw;
+    height: 33vh;
+  }
 `;
 const ImgWrap = styled.div`
   text-align: center;
@@ -176,6 +180,11 @@ const ImgWrap = styled.div`
   width: 380px;
   img {
     width: 100%;
+    @media screen and (max-width: 583px) {
+      width: 60vw;
+      height: 33vh;
+    }
+    margin-bottom: 10px;
   }
 `;
 interface UForm {

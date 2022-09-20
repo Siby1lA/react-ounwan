@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { fireSotreDB } from "../../../firebase";
 
 const CommentBox = styled.div`
+  background-color: ${(props) => props.theme.bgColor};
   width: 100%;
   position: absolute;
   bottom: 0;

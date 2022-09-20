@@ -25,6 +25,9 @@ const Wrap = styled.div`
 
 const Contents = styled.div`
   display: flex;
+  @media screen and (max-width: 777px) {
+    flex-direction: column;
+  }
   position: absolute;
   top: 0;
   left: 0;
@@ -33,9 +36,10 @@ const Contents = styled.div`
   background-color: ${(props) => props.theme.bgColor};
   border-radius: 10px;
   width: 600px;
+  @media screen and (max-width: 777px) {
+    width: 80vw;
+  }
   height: fit-content;
-  min-width: 600px;
-
   overflow: hidden;
 `;
 const VideoWrap = styled.div`
@@ -45,6 +49,10 @@ const VideoWrap = styled.div`
 const VideoContent = styled.div`
   video {
     width: 300px;
+    @media screen and (max-width: 777px) {
+      width: 100%;
+      height: 30vh;
+    }
   }
 `;
 

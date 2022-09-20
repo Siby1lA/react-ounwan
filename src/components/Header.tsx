@@ -15,18 +15,24 @@ const Wrap = styled.div`
   width: 100%;
   height: 65px;
   border-bottom: 1px solid ${(props) => props.theme.borderColor};
-
   display: flex;
   justify-content: center;
   img {
     width: 25px;
     height: 25px;
     border-radius: 50%;
+    @media screen and (max-width: 583px) {
+      width: 22px;
+      height: 22px;
+    }
   }
 `;
 const Nav = styled.div`
   width: 90vw;
   min-width: 550px;
+  @media screen and (max-width: 583px) {
+    min-width: 0px;
+  }
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -36,6 +42,9 @@ const Logo = styled.h1`
   font-weight: 500;
   font-size: 28px;
   color: ${(props) => props.theme.textColor};
+  @media screen and (max-width: 583px) {
+    font-size: 20px;
+  }
 `;
 const Category = styled.div`
   color: ${(props) => props.theme.textColor};
@@ -46,11 +55,18 @@ const Category = styled.div`
       font-size: 17px;
       cursor: pointer;
       margin-right: 30px;
+      @media screen and (max-width: 583px) {
+        margin-right: 15px;
+      }
       :last-child {
         margin-right: 0px;
       }
       :hover {
         transform: scale(1.1);
+        color: #3f51b5;
+      }
+      @media screen and (max-width: 583px) {
+        font-size: 15px;
       }
     }
   }
@@ -64,12 +80,18 @@ const Set = styled.div`
     padding: 5px;
     border-radius: 50%;
     margin-right: 15px;
+    @media screen and (max-width: 583px) {
+      margin-right: 7px;
+    }
     :last-child {
       margin-right: 0px;
     }
     svg {
-      width: 22px;
+      width: 25px;
       fill: ${(props) => props.theme.textColor};
+      @media screen and (max-width: 583px) {
+        width: 22px;
+      }
     }
     cursor: pointer;
     :hover {
@@ -125,11 +147,11 @@ function Header() {
           </ul>
         </Category>
         <Set>
-          <div>
+          {/* <div>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
               <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z" />
             </svg>
-          </div>
+          </div> */}
           <div
             onClick={() =>
               isDarkMode

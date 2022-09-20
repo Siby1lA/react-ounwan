@@ -51,12 +51,18 @@ const Box = styled.div`
       margin-bottom: 10px;
       border: 2px solid #4e5154;
       border-radius: 5px;
+      @media screen and (max-width: 587px) {
+        width: 65vw;
+      }
       &:focus {
       }
     }
     button {
       margin-top: 15px;
       background-color: #4e5154;
+      @media screen and (max-width: 587px) {
+        width: 65vw;
+      }
     }
   }
 `;

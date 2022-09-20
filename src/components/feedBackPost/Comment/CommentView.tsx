@@ -3,8 +3,13 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 
 const Wrap = styled.div`
+  z-index: 0;
   width: 100%;
   height: 370px;
+  @media screen and (max-width: 777px) {
+    height: 260px;
+    margin-bottom: 40px;
+  }
   overflow-y: scroll;
   ::-webkit-scrollbar {
     width: 0px;

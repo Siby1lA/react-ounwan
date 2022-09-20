@@ -85,6 +85,10 @@ const ImgUpload = styled.div`
   }
   video {
     width: 300px;
+    @media screen and (max-width: 583px) {
+      width: 60vw;
+      height: 50vh;
+    }
   }
 `;
 const ImgChoice = styled.div`
@@ -143,6 +147,10 @@ const VideoWrap = styled.div`
   width: 380px;
   video {
     width: 250px;
+    @media screen and (max-width: 583px) {
+      width: 60vw;
+      height: 50vh;
+    }
   }
 `;
 interface UForm {

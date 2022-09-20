@@ -19,7 +19,7 @@ const Wrap = styled.div`
   color: ${(props) => props.theme.textColor};
 `;
 const Contents = styled.div`
-  width: 90vw;
+  width: 90%;
   min-width: 550px;
   margin-bottom: 50px;
 `;

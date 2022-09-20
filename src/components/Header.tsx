@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -110,6 +111,9 @@ function Header() {
     dispatch(clearUser());
     authService.signOut();
   };
+  useEffect(() => {
+    window.localStorage.setItem("app_theme", isDarkMode);
+  }, [isDarkMode]);
   return (
     <Wrap>
       <Nav>

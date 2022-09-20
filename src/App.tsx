@@ -3,7 +3,7 @@ import Home from "./Routes/Home";
 import Login from "./Routes/Auth/Login";
 import Register from "./Routes/Auth/Register";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { authService } from "./firebase";
 import { clearUser, setUser } from "./redux/actions/UserAction";
 import Profile from "./Routes/Profile";
@@ -12,13 +12,13 @@ import { ThemeProvider } from "styled-components";
 
 import { darkTheme, lightTheme } from "./theme";
 import UserProfile from "./Routes/UserProfile";
+import { setDarkMode } from "./redux/actions/TriggerAction";
 function App() {
-  const isDarkMode = useSelector((state: any) => state.Trigger.isDarkMode);
-
+  const [theme, setTheme] = useState<any>();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isLoading = useSelector((state: any) => state.User.isLoading);
-
+  const isDarkMode = useSelector((state: any) => state.Trigger.isDarkMode);
   useEffect(() => {
     authService.onAuthStateChanged((user: string) => {
       if (user) {
@@ -30,13 +30,15 @@ function App() {
       }
     });
   }, []);
-
+  useEffect(() => {
+    setTheme(window.localStorage.getItem("app_theme") === "true");
+  }, [isDarkMode]);
   if (isLoading) {
     return <div>로딩중...</div>;
   } else {
     return (
       <>
-        <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+        <ThemeProvider theme={theme ? darkTheme : lightTheme}>
           <Header />
           <Routes>
             <Route path="/" element={<Home />}></Route>

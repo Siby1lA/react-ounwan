@@ -3,7 +3,7 @@ import { PathMatch, useMatch, useNavigate } from "react-router-dom";
 import { useCallback, useRef, useState } from "react";
 import { useScroll } from "framer-motion";
 import { useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { fireSotreDB, storageService } from "../../firebase";
 import { uid } from "uid";
 import getCroppedImg from "./cropImage";
@@ -14,6 +14,7 @@ import {
 } from "firebase/storage";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import Cropper, { Area, Point } from "react-easy-crop";
+import { setLoading } from "../../redux/actions/TriggerAction";
 
 const Overlay = styled.div`
   position: fixed;
@@ -194,11 +195,13 @@ interface UForm {
 }
 function HealthCreateModal() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { scrollY } = useScroll();
   const user = useSelector((state: any) => state.User.currentUser);
   const [imgPath, setImgPath] = useState("");
   const [tagList, setTagList] = useState<any>([]);
   const [inputToggle, setInputToggle] = useState(false);
+  // const [loading, setLoading] = useState(0);
   const { register, handleSubmit, watch, setValue } = useForm<UForm>();
   const chatMatch: PathMatch<string> | null = useMatch("/:type/create");
   if (chatMatch) {
@@ -207,13 +210,12 @@ function HealthCreateModal() {
 
   const onOverlayClick = () => {
     setInputToggle(false);
-    // document.body.style.overflow = "unset";
-    navigate(-1);
     setValue("descript", "");
     setImgPath("");
     setTagList("");
     setValue("tag", "");
     setValue("img", null);
+    navigate(-1);
   };
   const inputOpenImageRef = useRef<any>();
   const handleOpenImageRef = () => {
@@ -236,13 +238,16 @@ function HealthCreateModal() {
           "state_changed",
           (snapshot) => {
             // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-
+            const progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            dispatch(setLoading(Math.floor(progress)));
             switch (snapshot.state) {
               case "paused":
                 console.log("Upload is paused");
                 break;
               case "running":
                 console.log("Upload is running");
+
                 break;
             }
           },
@@ -283,15 +288,13 @@ function HealthCreateModal() {
             });
           }
         );
-        alert("작성되었습니다.");
-        onOverlayClick();
       } catch (error: any) {
         console.log(error);
       }
     } else {
       alert("이미지 를 넣어주세요");
     }
-    setInputToggle(false);
+    onOverlayClick();
     setValue("img", null);
   };
   const onKeyUp = (e: any) => {
@@ -349,7 +352,7 @@ function HealthCreateModal() {
         <>
           <Overlay onClick={onOverlayClick} key={1} />
           <Wrap>
-            <Contents style={{ top: scrollY.get() + 80 }}>
+            <Contents style={{ top: scrollY.get() + 0 }}>
               <Form
                 onSubmit={handleSubmit(onSubmit)}
                 onKeyDown={(e) => checkKeyDown(e)}

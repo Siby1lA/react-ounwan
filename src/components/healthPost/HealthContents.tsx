@@ -9,7 +9,7 @@ import { setBox } from "../../redux/actions/UserAction";
 const Box = styled.div`
   background-color: ${(props) => props.theme.boxColor};
   width: 380px;
-  height: 518px;
+  height: fit-content;
   margin: 20px;
   box-shadow: 4px 12px 30px 6px rgb(0 0 0 / 8%);
   border-radius: 20px;
@@ -36,12 +36,17 @@ const ProfileImg = styled.img`
 `;
 const BoxUserName = styled.div`
   display: flex;
-  span {
+  span:first-child {
     font-size: 18px;
     font-weight: 400;
     border-radius: 10px;
   }
   margin-bottom: 20px;
+`;
+const CreateDate = styled.span`
+  margin-left: 5px;
+  color: gray;
+  font-size: 10px;
 `;
 const LogoBox = styled.div`
   position: absolute;
@@ -90,6 +95,7 @@ const BoxTag = styled.ul`
 const BoxImg = styled.div``;
 const UploadImg = styled.img`
   width: 100%;
+  margin-bottom: -4px;
 `;
 const LogoWrap = styled.div`
   display: flex;
@@ -195,6 +201,9 @@ function HealthContents({ data }: any) {
             />
             <div>
               <span>{data.createBy.displayName}</span>
+              <CreateDate>
+                {data.timestamp.toDate().toLocaleString()}
+              </CreateDate>
               <BoxTag>
                 {data.tagList &&
                   data.tagList.map((tag: string, index: number) => (

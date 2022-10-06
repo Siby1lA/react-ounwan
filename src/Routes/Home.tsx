@@ -9,7 +9,6 @@ import HealthUpdateModal from "../components/healthPost/HealthUpdateModal";
 import { setType } from "../redux/actions/UserAction";
 import FeedBackCreateModal from "../components/feedBackPost/FeedBackCreateModal";
 import FeedBackView from "../components/feedBackPost/FeedBackView";
-
 const Wrap = styled.div`
   width: 100%;
   display: flex;
@@ -70,6 +69,7 @@ function Home() {
   useEffect(() => {
     dispatch(setType(type));
   }, [type]);
+
   return (
     <Wrap>
       {type === "오운완" ? (

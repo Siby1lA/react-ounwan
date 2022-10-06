@@ -6,3 +6,8 @@ export const setDarkMode = (data: boolean) => ({
   type: "SET_DARK_MODE",
   data: data,
 });
+
+export const setLoading = (data: any) => ({
+  type: "SET_LOADING",
+  data: data,
+});

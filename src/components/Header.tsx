@@ -4,9 +4,13 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { authService } from "../firebase";
 import useOutSideRef from "../hooks/useOutSideRef";
-import { setDarkMode, setDropDownOpen } from "../redux/actions/TriggerAction";
+import {
+  setDarkMode,
+  setDropDownOpen,
+  setLoading,
+} from "../redux/actions/TriggerAction";
 import { clearUser } from "../redux/actions/UserAction";
-
+import ProgressBar from "@ramonak/react-progress-bar";
 const Wrap = styled.div`
   position: sticky;
   top: 0px;
@@ -121,12 +125,17 @@ const Ul = styled.ul`
     }
   }
 `;
+const ProgressWrap = styled.div`
+  position: absolute;
+  bottom: -22px;
+  width: 80vw;
+`;
 function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isDropOpen = useSelector((state: any) => state.Trigger.isDropOpen);
   const isDarkMode = useSelector((state: any) => state.Trigger.isDarkMode);
-
+  const loading = useSelector((state: any) => state.Trigger.isLoading);
   const user = useSelector((state: any) => state.User.currentUser);
   const outsideRef = useOutSideRef();
   const onLogout = () => {
@@ -136,6 +145,11 @@ function Header() {
   useEffect(() => {
     window.localStorage.setItem("app_theme", isDarkMode);
   }, [isDarkMode]);
+
+  if (loading === 100) {
+    alert("업로드 완료");
+    dispatch(setLoading(0));
+  }
   return (
     <Wrap>
       <Nav>
@@ -196,6 +210,11 @@ function Header() {
           </Ul>
         )}
       </Nav>
+      <ProgressWrap>
+        {loading !== 0 && loading !== 100 && (
+          <ProgressBar completed={loading} />
+        )}
+      </ProgressWrap>
     </Wrap>
   );
 }

@@ -16,10 +16,12 @@ const Comment = styled.div`
   form {
     padding: 5px;
     display: flex;
+    justify-content: space-between;
     align-items: center;
     input {
       border: none;
       width: 80%;
+      margin-right: 30px;
       padding: 10px;
       background-color: ${(props) => props.theme.bgColor};
       &:focus {
@@ -28,9 +30,9 @@ const Comment = styled.div`
       color: ${(props) => props.theme.textColor};
     }
     button {
+      width: 50px;
       background-color: ${(props) => props.theme.bgColor};
       border: none;
-      width: 15%;
       color: #0095f6;
       font-weight: 400;
       font-size: 14px;
@@ -57,6 +59,7 @@ function CommentWrite() {
     formState: { errors },
   } = useForm<ICommentWrite>();
   const onSubmit = async (data: ICommentWrite) => {
+    if (watch("comment") === "") return;
     setValue("comment", "");
     const postRef = doc(fireSotreDB, "feedback", `${id}`);
     await setDoc(

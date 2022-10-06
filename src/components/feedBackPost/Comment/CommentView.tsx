@@ -7,7 +7,7 @@ const Wrap = styled.div`
   width: 100%;
   height: 370px;
   @media screen and (max-width: 777px) {
-    height: 260px;
+    height: 220px;
     margin-bottom: 40px;
   }
   overflow-y: scroll;

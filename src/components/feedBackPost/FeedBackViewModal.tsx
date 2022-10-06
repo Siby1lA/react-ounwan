@@ -51,7 +51,7 @@ const VideoContent = styled.div`
     width: 300px;
     @media screen and (max-width: 777px) {
       width: 100%;
-      height: 30vh;
+      height: 25vh;
     }
   }
 `;
@@ -241,7 +241,7 @@ function FeedBackViewModal() {
         <>
           <Overlay onClick={onOverlayClick} key={1} />
           <Wrap>
-            <Contents style={{ top: scrollY.get() + 80 }}>
+            <Contents style={{ top: scrollY.get() + 0 }}>
               <LeftContents>
                 <VideoWrap>
                   {boxData && (

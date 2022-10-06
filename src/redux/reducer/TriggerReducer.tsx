@@ -1,6 +1,7 @@
 const init = {
   isDropOpen: false,
   isDarkMode: null,
+  isLoading: 0,
 };
 export default function (state = init, action: any) {
   switch (action.type) {
@@ -14,7 +15,11 @@ export default function (state = init, action: any) {
         ...state,
         isDarkMode: action.data,
       };
-
+    case "SET_LOADING":
+      return {
+        ...state,
+        isLoading: action.data,
+      };
     default:
       return state;
   }

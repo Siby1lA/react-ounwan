@@ -111,17 +111,13 @@ interface IForm {
 }
 function Login() {
   const navigate = useNavigate();
-  const { register, handleSubmit, watch } = useForm<IForm>();
+  const { register, handleSubmit } = useForm<IForm>();
   const [errorFromSubmit, setErrorFromSubmit] = useState("");
-  const [loading, setLoading] = useState(false);
   const onSubmit = async (data: IForm) => {
     try {
-      setLoading(true);
       await signInWithEmailAndPassword(authService, data.email, data.password);
-      setLoading(false);
     } catch (error: any) {
       setErrorFromSubmit(error.message);
-      setLoading(false);
       setTimeout(() => {
         setErrorFromSubmit("");
       }, 5000);

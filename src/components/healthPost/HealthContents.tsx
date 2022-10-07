@@ -202,7 +202,7 @@ function HealthContents({ data }: any) {
             <div>
               <span>{data.createBy.displayName}</span>
               <CreateDate>
-                {data.timestamp.toDate().toLocaleString()}
+                {data.timestamp && data.timestamp.toDate().toLocaleString()}
               </CreateDate>
               <BoxTag>
                 {data.tagList &&

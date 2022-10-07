@@ -1,6 +1,6 @@
 const init = {
   isDropOpen: false,
-  isDarkMode: null,
+  isDarkMode: window.localStorage.getItem("app_theme") === "true",
   isLoading: 0,
 };
 export default function (state = init, action: any) {

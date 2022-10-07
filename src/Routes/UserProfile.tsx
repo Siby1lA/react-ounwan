@@ -155,6 +155,7 @@ function UserProfile() {
     });
     navigate(`/${type}/view/${id}`);
   };
+  console.log(feedBackData);
   return (
     <Wrap>
       <FristWrap>
@@ -177,19 +178,25 @@ function UserProfile() {
               </Post>
             ))}
         </Posts>
-        <PostTitle>
-          <ul>
-            <li>피드백</li>
-          </ul>
-        </PostTitle>
-        <Posts>
-          {feedBackData &&
-            feedBackData.map((data: any, index: number) => (
-              <Post key={index}>
-                <video onClick={() => onClickVideo(data.id)} src={data.video} />
-              </Post>
-            ))}
-        </Posts>
+        {feedBackData && feedBackData.length !== 0 && (
+          <>
+            <PostTitle>
+              <ul>
+                <li>피드백</li>
+              </ul>
+            </PostTitle>
+            <Posts>
+              {feedBackData.map((data: any, index: number) => (
+                <Post key={index}>
+                  <video
+                    onClick={() => onClickVideo(data.id)}
+                    src={data.video}
+                  />
+                </Post>
+              ))}
+            </Posts>
+          </>
+        )}
       </PostWrap>
     </Wrap>
   );

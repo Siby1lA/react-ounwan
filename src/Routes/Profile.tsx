@@ -1,4 +1,4 @@
-import { updateProfile } from "firebase/auth";
+import { updatePassword, updateProfile } from "firebase/auth";
 import {
   collection,
   doc,
@@ -28,6 +28,7 @@ const Wrap = styled.div`
   width: 100%;
   height: fit-content;
   background-color: ${(props) => props.theme.bgColor};
+  color: ${(props) => props.theme.textColor};
   span {
     font-weight: 400;
     font-size: 16px;
@@ -139,6 +140,7 @@ const Category = styled.div`
 `;
 interface UForm {
   nickname: string;
+  password: string;
   img: any;
 }
 
@@ -381,8 +383,19 @@ function Profile() {
         );
       }
       setUserName(data.nickname);
-      alert("변경되었습니다.");
     }
+    // 패스워드 변경시
+    if (data.password) {
+      updatePassword(user, data.password)
+        .then(() => {
+          // Update successful.
+        })
+        .catch((error) => {
+          // An error ocurred
+          alert("비밀번호 변경 실패!");
+        });
+    }
+    alert("변경되었습니다.");
   };
   const onClickVideo = async (id: any) => {
     //실시간
@@ -402,14 +415,21 @@ function Profile() {
           </Content>
         </FristWrap>
         <SecondWrap>
-          <span>닉네임</span>
+          <span>유저네임</span>
           <input
             {...register("nickname")}
             type="text"
             placeholder="닉네임 변경"
           />
         </SecondWrap>
-
+        <SecondWrap>
+          <span>비밀번호</span>
+          <input
+            {...register("password")}
+            type="password"
+            placeholder="비밀번호 변경"
+          />
+        </SecondWrap>
         <input
           {...register("img")}
           type="file"
@@ -419,96 +439,102 @@ function Profile() {
           onChange={handleUploadImage}
         ></input>
         <Create>
-          <button>제출</button>
+          <button>변경</button>
         </Create>
       </form>
-      <Category>
-        <div>오운완</div>
-      </Category>
-      <PostWrap>
-        <PostTitle>
-          <ul>
-            <li
-              onClick={() => {
-                setOnHealthLike(true);
-                getUserPosts();
-              }}
-            >
-              게시글
-            </li>
-            <li
-              onClick={() => {
-                setOnHealthLike(false);
-                getLikePosts("health");
-              }}
-            >
-              좋아요
-            </li>
-          </ul>
-        </PostTitle>
-        <Posts>
-          {onHealthLike
-            ? healthData &&
-              healthData.map((data: any, index: number) => (
-                <Post key={index}>
-                  <img src={data.image} />
-                </Post>
-              ))
-            : healthLikeData &&
-              healthLikeData.map((data: any, index: number) => (
-                <Post key={index}>
-                  <img src={data.image} />
-                </Post>
-              ))}
-        </Posts>
-      </PostWrap>
-
-      <Category>
-        <div>피드백</div>
-      </Category>
-      <PostWrap>
-        <PostTitle>
-          <ul>
-            <li
-              onClick={() => {
-                setOnFeedBackLike(true);
-                getUserPosts();
-              }}
-            >
-              게시글
-            </li>
-            <li
-              onClick={() => {
-                setOnFeedBackLike(false);
-                getLikePosts("feedback");
-              }}
-            >
-              좋아요
-            </li>
-          </ul>
-        </PostTitle>
-        <Posts>
-          {onFeedBackLike
-            ? feedBackData &&
-              feedBackData.map((data: any, index: number) => (
-                <Post key={index}>
-                  <video
-                    onClick={() => onClickVideo(data.id)}
-                    src={data.video}
-                  />
-                </Post>
-              ))
-            : feedBackLikeData &&
-              feedBackLikeData.map((data: any, index: number) => (
-                <Post key={index}>
-                  <video
-                    onClick={() => onClickVideo(data.id)}
-                    src={data.video}
-                  />
-                </Post>
-              ))}
-        </Posts>
-      </PostWrap>
+      {healthData && healthData.length > 0 && (
+        <>
+          <Category>
+            <div>오운완</div>
+          </Category>
+          <PostWrap>
+            <PostTitle>
+              <ul>
+                <li
+                  onClick={() => {
+                    setOnHealthLike(true);
+                    getUserPosts();
+                  }}
+                >
+                  게시글
+                </li>
+                <li
+                  onClick={() => {
+                    setOnHealthLike(false);
+                    getLikePosts("health");
+                  }}
+                >
+                  좋아요
+                </li>
+              </ul>
+            </PostTitle>
+            <Posts>
+              {onHealthLike
+                ? healthData.map((data: any, index: number) => (
+                    <Post key={index}>
+                      <img src={data.image} />
+                    </Post>
+                  ))
+                : healthLikeData &&
+                  healthLikeData.map((data: any, index: number) => (
+                    <Post key={index}>
+                      <img src={data.image} />
+                    </Post>
+                  ))}
+            </Posts>
+          </PostWrap>
+        </>
+      )}
+      {feedBackData && feedBackData.length > 0 && (
+        <>
+          {" "}
+          <Category>
+            <div>피드백</div>
+          </Category>
+          <PostWrap>
+            <PostTitle>
+              <ul>
+                <li
+                  onClick={() => {
+                    setOnFeedBackLike(true);
+                    getUserPosts();
+                  }}
+                >
+                  게시글
+                </li>
+                <li
+                  onClick={() => {
+                    setOnFeedBackLike(false);
+                    getLikePosts("feedback");
+                  }}
+                >
+                  좋아요
+                </li>
+              </ul>
+            </PostTitle>
+            <Posts>
+              {onFeedBackLike
+                ? feedBackData.map((data: any, index: number) => (
+                    <Post key={index}>
+                      <video
+                        onClick={() => onClickVideo(data.id)}
+                        src={data.video}
+                      />
+                    </Post>
+                  ))
+                : feedBackLikeData &&
+                  feedBackLikeData.map((data: any, index: number) => (
+                    <Post key={index}>
+                      <video
+                        onClick={() => onClickVideo(data.id)}
+                        src={data.video}
+                      />
+                    </Post>
+                  ))}
+            </Posts>
+          </PostWrap>
+        </>
+      )}
     </Wrap>
   );
 }

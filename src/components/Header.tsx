@@ -137,6 +137,7 @@ function Header() {
   const isDarkMode = useSelector((state: any) => state.Trigger.isDarkMode);
   const loading = useSelector((state: any) => state.Trigger.isLoading);
   const user = useSelector((state: any) => state.User.currentUser);
+
   const outsideRef = useOutSideRef();
   const onLogout = () => {
     dispatch(clearUser());
@@ -159,11 +160,29 @@ function Header() {
   return (
     <Wrap>
       <Nav>
-        <Logo onClick={() => navigate(`/${"오운완"}`)}>오운완!</Logo>
+        <Logo
+          onClick={() =>
+            user ? navigate(`/${"오운완"}`) : alert("로그인은 필수입니다.")
+          }
+        >
+          오운완!
+        </Logo>
         <Category>
           <ul>
-            <li onClick={() => navigate(`/${"오운완"}`)}>오운완</li>
-            <li onClick={() => navigate(`/${"피드백"}`)}>피드백</li>
+            <li
+              onClick={() =>
+                user ? navigate(`/${"오운완"}`) : alert("로그인은 필수입니다.")
+              }
+            >
+              오운완
+            </li>
+            <li
+              onClick={() =>
+                user ? navigate(`/${"피드백"}`) : alert("로그인은 필수입니다.")
+              }
+            >
+              피드백
+            </li>
           </ul>
         </Category>
         <Set>
@@ -203,8 +222,20 @@ function Header() {
               </>
             ) : (
               <>
-                <li onClick={() => navigate("/login")}>로그인</li>
-                <li onClick={() => navigate("/register")}>회원가입</li>
+                <li
+                  onClick={() => {
+                    if (user !== null) navigate("/login");
+                  }}
+                >
+                  로그인
+                </li>
+                <li
+                  onClick={() => {
+                    if (user !== null) navigate("/register");
+                  }}
+                >
+                  회원가입
+                </li>
               </>
             )}
           </Ul>

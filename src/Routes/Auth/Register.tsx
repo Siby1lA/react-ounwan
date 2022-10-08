@@ -3,9 +3,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { authService, dbService, fireSotreDB } from "../../firebase";
+import { authService, fireSotreDB } from "../../firebase";
 import md5 from "md5";
-import { ref, set } from "firebase/database";
 import { addDoc, collection } from "firebase/firestore";
 const Wrap = styled.div`
   width: 100%;
@@ -13,6 +12,7 @@ const Wrap = styled.div`
   flex-direction: column;
   align-items: center;
   margin-top: 100px;
+  color: ${(props) => props.theme.textColor};
   button {
     color: white;
     font-size: 14px;

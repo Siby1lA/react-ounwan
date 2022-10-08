@@ -12,6 +12,7 @@ import { ThemeProvider } from "styled-components";
 import { darkTheme, lightTheme } from "./theme";
 import UserProfile from "./Routes/UserProfile";
 import GlobalStyles from "./GlobalStyles";
+import PasswordReset from "./Routes/Auth/PasswordReset";
 function App() {
   const [theme, setTheme] = useState<any>();
   const navigate = useNavigate();
@@ -49,6 +50,7 @@ function App() {
           ></Route>
           <Route path="/login" element={<Login />}></Route>
           <Route path="/register" element={<Register />}></Route>
+          <Route path="/password" element={<PasswordReset />}></Route>
           <Route path="/profile" element={<Profile />}></Route>
         </Routes>
       </ThemeProvider>

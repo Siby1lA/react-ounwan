@@ -17,6 +17,7 @@ const Wrap = styled.div`
   flex-direction: column;
   align-items: center;
   margin-top: 100px;
+  color: ${(props) => props.theme.textColor};
   button {
     color: white;
     font-size: 14px;
@@ -33,12 +34,15 @@ const Header = styled.h1`
   margin-bottom: 20px;
 `;
 const Box = styled.div`
-  position: relative;
-  padding: 30px;
-
+  padding: 20px 30px;
   border-radius: 10px;
   box-shadow: 0 13px 27px -5px rgba(50, 50, 93, 0.25),
     0 8px 16px -8px rgba(0, 0, 0, 0.1), 0 -6px 16px -6px rgba(0, 0, 0, 0.025);
+  div {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
   form {
     label {
       font-weight: 400;
@@ -95,11 +99,7 @@ const Footer = styled.div`
   }
 `;
 
-const Create = styled.div`
-  position: absolute;
-  right: 0;
-  margin-right: 30px;
-  margin-top: 5px;
+const Etc = styled.div`
   font-size: 14px;
   font-weight: 400;
   color: gray;
@@ -164,7 +164,10 @@ function Login() {
           <input {...register("password")} type="password" />
           <button>로그인</button>
         </form>
-        <Create onClick={() => navigate(`/register`)}>회원가입...</Create>
+        <div>
+          <Etc onClick={() => navigate(`/password`)}>비밀번호 찾기</Etc>
+          <Etc onClick={() => navigate(`/register`)}>회원가입...</Etc>
+        </div>
       </Box>
       <Footer>
         <div>

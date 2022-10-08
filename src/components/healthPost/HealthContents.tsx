@@ -245,7 +245,15 @@ function HealthContents({ data }: any) {
                         </>
                       ) : (
                         <>
-                          <li>작성자 정보</li>
+                          <li
+                            onClick={() =>
+                              navigate(
+                                `/${type}/userprofile/${data.createBy.uid}`
+                              )
+                            }
+                          >
+                            작성자 정보
+                          </li>
                           <li>작성자 신고</li>
                         </>
                       )}

@@ -68,8 +68,10 @@ function Home() {
   const user = useSelector((state: any) => state.User.currentUser);
   useEffect(() => {
     dispatch(setType(type));
+    if (type === "피드백") {
+      alert("테스트버전입니다.");
+    }
   }, [type]);
-
   return (
     <Wrap>
       {type === "오운완" ? (

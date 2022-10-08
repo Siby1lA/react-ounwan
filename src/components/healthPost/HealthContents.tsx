@@ -46,7 +46,8 @@ const BoxUserName = styled.div`
 const CreateDate = styled.span`
   margin-left: 5px;
   color: gray;
-  font-size: 10px;
+  font-weight: 400;
+  font-size: 12px;
 `;
 const LogoBox = styled.div`
   position: absolute;
@@ -187,8 +188,28 @@ function HealthContents({ data }: any) {
     }
     navigate(`/${type}/update/${data.id}`);
   };
+  const timeForToday = (value: any) => {
+    const today = new Date();
+    const timeValue = new Date(value.seconds * 1000);
+    const betweenTime = Math.floor(
+      (today.getTime() - timeValue.getTime()) / 1000 / 60
+    );
+    if (betweenTime < 1) return "방금전";
+    if (betweenTime < 60) {
+      return `${betweenTime}분전`;
+    }
+    const betweenTimeHour = Math.floor(betweenTime / 60);
+    if (betweenTimeHour < 24) {
+      return `${betweenTimeHour}시간전`;
+    }
+    const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
+    if (betweenTimeDay < 365) {
+      return `${betweenTimeDay}일전`;
+    }
+
+    return `${Math.floor(betweenTimeDay / 365)}년전`;
+  };
   return (
-    // onClick={() => navigate(`/${type}/view/${data.id}`)}
     <Box>
       <BoxHeader>
         <BoxUserName>
@@ -201,9 +222,7 @@ function HealthContents({ data }: any) {
             />
             <div>
               <span>{data.createBy.displayName}</span>
-              <CreateDate>
-                {data.timestamp && data.timestamp.toDate().toLocaleString()}
-              </CreateDate>
+              <CreateDate>{timeForToday(data.timestamp)}</CreateDate>
               <BoxTag>
                 {data.tagList &&
                   data.tagList.map((tag: string, index: number) => (

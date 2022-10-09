@@ -6,12 +6,12 @@ import {
   query,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { fireSotreDB } from "../firebase";
 import { setBox } from "../redux/actions/UserAction";
-
+import Calendar from "react-github-contribution-calendar";
 const Wrap = styled.div`
   display: flex;
   flex-direction: column;
@@ -93,8 +93,31 @@ const Post = styled.div`
     cursor: pointer;
   }
 `;
+const Count = styled.div`
+  font-weight: 400;
+  text-align: center;
+  margin-top: 10px;
+`;
+const CalendarWrap = styled.div`
+  width: 150%;
+  @media screen and (max-width: 583px) {
+    width: 100%;
+  }
+  padding: 5px;
+  border-radius: 10px;
+  margin-top: 30px;
+  background-color: ${(props) => props.theme.boxColor};
+  box-shadow: 4px 12px 30px 6px rgb(0 0 0 / 8%);
+`;
+const SecondWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 function UserProfile() {
   const { type, id } = useParams();
+  const ounwanValue = useSelector((state: any) => state.User.userPostData);
+  const ounwanCount = useSelector((state: any) => state.User.userOunwanCount);
   const [userInfo, setUserInfo] = useState<any>(null);
   const [healthData, setHealthData] = useState<any>(null);
   const [feedBackData, setFeedBackData] = useState<any>(null);
@@ -131,6 +154,15 @@ function UserProfile() {
       }));
       // 유저 게시글
       const filterData = list.filter((data: any) => data.createBy.uid === id);
+      const postDate = filterData.map(
+        (data: any) =>
+          String(data.timestamp.toDate().getFullYear()) +
+          "-" +
+          String(("0" + (data.timestamp.toDate().getMonth() + 1)).slice(-2)) +
+          "-" +
+          String(("0" + data.timestamp.toDate().getDate()).slice(-2))
+      );
+
       setHealthData(filterData);
     });
     let feedBackData = query(
@@ -155,7 +187,14 @@ function UserProfile() {
     });
     navigate(`/${type}/view/${id}`);
   };
-  console.log(feedBackData);
+
+  let until = String(
+    new Date().getFullYear() +
+      "-" +
+      (new Date().getMonth() + 1) +
+      "-" +
+      new Date().getDate()
+  );
   return (
     <Wrap>
       <FristWrap>
@@ -164,6 +203,37 @@ function UserProfile() {
           <span>{userInfo?.displayName}</span>
         </Content>
       </FristWrap>
+      <SecondWrap>
+        <CalendarWrap>
+          <Calendar
+            values={ounwanValue}
+            until={until}
+            panelColors={[
+              "#EEEEEE",
+              "#9dc7ea",
+              "#5fadec",
+              "#3b94dc",
+              "#1c75be",
+            ]}
+            weekNames={["일", "월", "화", "수", "목", "금", "토"]}
+            monthNames={[
+              "1월",
+              "2월",
+              "3월",
+              "4월",
+              "5월",
+              "6월",
+              "7월",
+              "8월",
+              "9월",
+              "10월",
+              "11월",
+              "12월",
+            ]}
+          />
+        </CalendarWrap>
+        <Count>오운완 {ounwanCount.length}일째</Count>
+      </SecondWrap>
       <PostWrap>
         <PostTitle>
           <ul>

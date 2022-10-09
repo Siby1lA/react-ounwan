@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
@@ -6,9 +6,16 @@ import HealthView from "../components/healthPost/HealthView";
 import FeedBackViewModal from "../components/feedBackPost/FeedBackViewModal";
 import HealthCreateModal from "../components/healthPost/HealthCreateModal";
 import HealthUpdateModal from "../components/healthPost/HealthUpdateModal";
-import { setType } from "../redux/actions/UserAction";
+import {
+  setType,
+  userOunwanCount,
+  userPostData,
+} from "../redux/actions/UserAction";
 import FeedBackCreateModal from "../components/feedBackPost/FeedBackCreateModal";
 import FeedBackView from "../components/feedBackPost/FeedBackView";
+import Calendar from "react-github-contribution-calendar";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { fireSotreDB } from "../firebase";
 const Wrap = styled.div`
   width: 100%;
   display: flex;
@@ -19,10 +26,9 @@ const Wrap = styled.div`
 `;
 const Contents = styled.div`
   width: 90%;
-  margin-bottom: 50px;
 `;
 const SubHeader = styled.div`
-  padding: 100px 0px;
+  padding: 100px 10px 0px 0px;
 `;
 const Title = styled.h1`
   font-size: 46px;
@@ -61,17 +67,89 @@ const Create = styled.div`
     padding: 14px;
   }
 `;
+const CalendarWrap = styled.div`
+  width: 500px;
+  @media screen and (max-width: 583px) {
+    width: 300px;
+  }
+  padding: 5px;
+  border-radius: 10px;
+  margin-top: 30px;
+  background-color: ${(props) => props.theme.boxColor};
+  box-shadow: 4px 12px 30px 6px rgb(0 0 0 / 8%);
+`;
+const Count = styled.div`
+  font-weight: 400;
+  font-size: 24px;
+  margin-top: 10px;
+  margin-bottom: 50px;
+`;
+const OunwanCount = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  @media screen and (max-width: 583px) {
+    align-items: center;
+  }
+`;
 function Home() {
   const { type } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state: any) => state.User.currentUser);
+  const ounwanValue = useSelector((state: any) => state.User.userPostData);
+  const ounwanCount = useSelector((state: any) => state.User.userOunwanCount);
   useEffect(() => {
     dispatch(setType(type));
     if (type === "피드백") {
       alert("테스트버전입니다.");
     }
+    userGetOunwan();
   }, [type]);
+  const userGetOunwan = () => {
+    let healthData = query(
+      collection(fireSotreDB, "health"),
+      orderBy("timestamp", "desc")
+    );
+    onSnapshot(healthData, (snapShot) => {
+      const list: any = snapShot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      // 내 게시글
+      const filterData = list.filter(
+        (data: any) => data.createBy.uid === user.uid
+      );
+      const postDate = filterData.map(
+        (data: any) =>
+          String(data.timestamp.toDate().getFullYear()) +
+          "-" +
+          String(("0" + (data.timestamp.toDate().getMonth() + 1)).slice(-2)) +
+          "-" +
+          String(("0" + data.timestamp.toDate().getDate()).slice(-2))
+      );
+      dispatch(
+        userOunwanCount(
+          postDate.filter((element: any, index: any) => {
+            return postDate.indexOf(element) === index;
+          })
+        )
+      );
+      const result: any = {};
+      postDate.forEach((x: any) => {
+        result[x] = (result[x] || 0) + 1;
+      });
+      dispatch(userPostData(result));
+    });
+  };
+
+  let until = String(
+    new Date().getFullYear() +
+      "-" +
+      (new Date().getMonth() + 1) +
+      "-" +
+      new Date().getDate()
+  );
   return (
     <Wrap>
       {type === "오운완" ? (
@@ -83,6 +161,43 @@ function Home() {
                 <span>{user?.displayName}</span>님 환영합니다.
               </SubTitle>
             </SubHeader>
+            <OunwanCount>
+              <CalendarWrap>
+                <Calendar
+                  values={ounwanValue}
+                  until={until}
+                  panelColors={[
+                    "#EEEEEE",
+                    "#9dc7ea",
+                    "#5fadec",
+                    "#3b94dc",
+                    "#1c75be",
+                  ]}
+                  weekNames={["일", "월", "화", "수", "목", "금", "토"]}
+                  monthNames={[
+                    "1월",
+                    "2월",
+                    "3월",
+                    "4월",
+                    "5월",
+                    "6월",
+                    "7월",
+                    "8월",
+                    "9월",
+                    "10월",
+                    "11월",
+                    "12월",
+                  ]}
+                />
+              </CalendarWrap>
+              <Count>
+                오운완{" "}
+                <span style={{ color: "tomato", fontWeight: "600" }}>
+                  {ounwanCount.length}
+                </span>
+                일째!
+              </Count>
+            </OunwanCount>
             <Content>
               <ContentTitle>오늘 운동 완료</ContentTitle>
               <Create>

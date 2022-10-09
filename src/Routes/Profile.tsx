@@ -21,6 +21,7 @@ import styled from "styled-components";
 import { uid } from "uid";
 import { authService, fireSotreDB, storageService } from "../firebase";
 import { setBox } from "../redux/actions/UserAction";
+import Calendar from "react-github-contribution-calendar";
 const Wrap = styled.div`
   display: flex;
   flex-direction: column;
@@ -33,6 +34,24 @@ const Wrap = styled.div`
     font-weight: 400;
     font-size: 16px;
   }
+`;
+const UserInfoWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+const FormWrap = styled.div``;
+const CalendarWrap = styled.div`
+  width: 150%;
+  @media screen and (max-width: 583px) {
+    width: 100%;
+  }
+  border-radius: 10px;
+  padding: 5px;
+  margin-top: 30px;
+  background-color: ${(props) => props.theme.boxColor};
+  box-shadow: 4px 12px 30px 6px rgb(0 0 0 / 8%);
 `;
 const FristWrap = styled.div`
   margin-top: 20px;
@@ -138,6 +157,11 @@ const Category = styled.div`
     cursor: pointer;
   }
 `;
+const Count = styled.div`
+  font-weight: 400;
+  text-align: center;
+  margin-top: 10px;
+`;
 interface UForm {
   nickname: string;
   password: string;
@@ -146,6 +170,8 @@ interface UForm {
 
 function Profile() {
   const user = useSelector((state: any) => state.User.currentUser);
+  const ounwanValue = useSelector((state: any) => state.User.userPostData);
+  const ounwanCount = useSelector((state: any) => state.User.userOunwanCount);
   const [imgPath, setImgPath] = useState("");
   const [healthData, setHealthData] = useState<any>(null);
   const [feedBackData, setFeedBackData] = useState<any>(null);
@@ -179,6 +205,7 @@ function Profile() {
       const filterData = list.filter(
         (data: any) => data.createBy.uid === user.uid
       );
+
       setHealthData(filterData);
     });
     // 피드백 게시글
@@ -404,44 +431,86 @@ function Profile() {
     });
     navigate(`/피드백/view/${id}`);
   };
+
+  let until = String(
+    new Date().getFullYear() +
+      "-" +
+      (new Date().getMonth() + 1) +
+      "-" +
+      new Date().getDate()
+  );
+
   return (
     <Wrap>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <FristWrap>
-          {imgPath ? <img src={imgPath} /> : <img src={user?.photoURL} />}
-          <Content>
-            <span>{userName}</span>
-            <div onClick={handleOpenImageRef}>프로필 사진 바꾸기</div>
-          </Content>
-        </FristWrap>
-        <SecondWrap>
-          <span>유저네임</span>
-          <input
-            {...register("nickname")}
-            type="text"
-            placeholder="닉네임 변경"
+      <UserInfoWrap>
+        <FormWrap>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <FristWrap>
+              {imgPath ? <img src={imgPath} /> : <img src={user?.photoURL} />}
+              <Content>
+                <span>{userName}</span>
+                <div onClick={handleOpenImageRef}>프로필 사진 바꾸기</div>
+              </Content>
+            </FristWrap>
+            <SecondWrap>
+              <span>유저네임</span>
+              <input
+                {...register("nickname")}
+                type="text"
+                placeholder="닉네임 변경"
+              />
+            </SecondWrap>
+            <SecondWrap>
+              <span>비밀번호</span>
+              <input
+                {...register("password")}
+                type="password"
+                placeholder="비밀번호 변경"
+              />
+            </SecondWrap>
+            <input
+              {...register("img")}
+              type="file"
+              style={{ display: "none" }}
+              accept="image/jpeg, image/png, image/webp"
+              ref={inputOpenImageRef}
+              onChange={handleUploadImage}
+            ></input>
+            <Create>
+              <button>변경</button>
+            </Create>
+          </form>
+        </FormWrap>
+        <CalendarWrap>
+          <Calendar
+            values={ounwanValue}
+            until={until}
+            panelColors={[
+              "#EEEEEE",
+              "#9dc7ea",
+              "#5fadec",
+              "#3b94dc",
+              "#1c75be",
+            ]}
+            weekNames={["일", "월", "화", "수", "목", "금", "토"]}
+            monthNames={[
+              "1월",
+              "2월",
+              "3월",
+              "4월",
+              "5월",
+              "6월",
+              "7월",
+              "8월",
+              "9월",
+              "10월",
+              "11월",
+              "12월",
+            ]}
           />
-        </SecondWrap>
-        <SecondWrap>
-          <span>비밀번호</span>
-          <input
-            {...register("password")}
-            type="password"
-            placeholder="비밀번호 변경"
-          />
-        </SecondWrap>
-        <input
-          {...register("img")}
-          type="file"
-          style={{ display: "none" }}
-          accept="image/jpeg, image/png, image/webp"
-          ref={inputOpenImageRef}
-          onChange={handleUploadImage}
-        ></input>
-        <Create>
-          <button>변경</button>
-        </Create>
-      </form>
+        </CalendarWrap>
+        <Count>오운완 {ounwanCount.length}일째</Count>
+      </UserInfoWrap>
       {healthData && healthData.length > 0 && (
         <>
           <Category>

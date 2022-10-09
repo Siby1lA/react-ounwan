@@ -3,6 +3,8 @@ const init = {
   isLoading: true,
   type: "",
   boxData: null,
+  userPostData: [],
+  userOunwanCount: 0,
 };
 export default function (state = init, action: any) {
   switch (action.type) {
@@ -27,6 +29,16 @@ export default function (state = init, action: any) {
       return {
         ...state,
         boxData: action.data,
+      };
+    case "SET_USER_POST_DATA":
+      return {
+        ...state,
+        userPostData: action.data,
+      };
+    case "SET_USER_OUNWAN_COUNT":
+      return {
+        ...state,
+        userOunwanCount: action.data,
       };
     default:
       return state;

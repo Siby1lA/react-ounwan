@@ -15,3 +15,12 @@ export const setBox = (data: any) => ({
   type: "SET_BOX",
   data: data,
 });
+
+export const userPostData = (data: any) => ({
+  type: "SET_USER_POST_DATA",
+  data: data,
+});
+export const userOunwanCount = (data: any) => ({
+  type: "SET_USER_OUNWAN_COUNT",
+  data: data,
+});

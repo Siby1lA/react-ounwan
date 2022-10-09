@@ -222,7 +222,9 @@ function HealthContents({ data }: any) {
             />
             <div>
               <span>{data.createBy.displayName}</span>
-              <CreateDate>{timeForToday(data.timestamp)}</CreateDate>
+              <CreateDate>
+                {data.timestamp && timeForToday(data.timestamp)}
+              </CreateDate>
               <BoxTag>
                 {data.tagList &&
                   data.tagList.map((tag: string, index: number) => (

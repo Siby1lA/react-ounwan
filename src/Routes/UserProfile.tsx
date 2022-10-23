@@ -6,7 +6,7 @@ import {
   query,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { fireSotreDB } from "../firebase";
@@ -100,7 +100,7 @@ const Count = styled.div`
 `;
 const CalendarWrap = styled.div`
   width: 150%;
-  @media screen and (max-width: 583px) {
+  @media screen and (max-width: 1000px) {
     width: 100%;
   }
   padding: 5px;
@@ -116,11 +116,11 @@ const SecondWrap = styled.div`
 `;
 function UserProfile() {
   const { type, id } = useParams();
-  const ounwanValue = useSelector((state: any) => state.User.userPostData);
-  const ounwanCount = useSelector((state: any) => state.User.userOunwanCount);
   const [userInfo, setUserInfo] = useState<any>(null);
   const [healthData, setHealthData] = useState<any>(null);
   const [feedBackData, setFeedBackData] = useState<any>(null);
+  const [mark, setMark] = useState([]);
+  const [count, setCount] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   useEffect(() => {
@@ -162,7 +162,12 @@ function UserProfile() {
           "-" +
           String(("0" + data.timestamp.toDate().getDate()).slice(-2))
       );
-
+      setCount(
+        postDate.filter((element: any, index: any) => {
+          return postDate.indexOf(element) === index;
+        })
+      );
+      setMark(postDate);
       setHealthData(filterData);
     });
     let feedBackData = query(
@@ -187,7 +192,11 @@ function UserProfile() {
     });
     navigate(`/${type}/view/${id}`);
   };
-
+  const result: any = {};
+  mark.forEach((x) => {
+    result[x] = (result[x] || 0) + 1;
+  });
+  let values = result;
   let until = String(
     new Date().getFullYear() +
       "-" +
@@ -206,7 +215,7 @@ function UserProfile() {
       <SecondWrap>
         <CalendarWrap>
           <Calendar
-            values={ounwanValue}
+            values={values}
             until={until}
             panelColors={[
               "#EEEEEE",
@@ -232,7 +241,7 @@ function UserProfile() {
             ]}
           />
         </CalendarWrap>
-        <Count>오운완 {ounwanCount.length}일째</Count>
+        <Count>오운완 {count && count.length}일째</Count>
       </SecondWrap>
       <PostWrap>
         <PostTitle>

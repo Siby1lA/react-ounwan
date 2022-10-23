@@ -99,49 +99,13 @@ function Home() {
   const user = useSelector((state: any) => state.User.currentUser);
   const ounwanValue = useSelector((state: any) => state.User.userPostData);
   const ounwanCount = useSelector((state: any) => state.User.userOunwanCount);
+  const [count, setCount] = useState(0);
   useEffect(() => {
     dispatch(setType(type));
     if (type === "피드백") {
       alert("테스트버전입니다.");
     }
-    userGetOunwan();
   }, [type]);
-  const userGetOunwan = () => {
-    let healthData = query(
-      collection(fireSotreDB, "health"),
-      orderBy("timestamp", "desc")
-    );
-    onSnapshot(healthData, (snapShot) => {
-      const list: any = snapShot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      // 내 게시글
-      const filterData = list.filter(
-        (data: any) => data.createBy.uid === user.uid
-      );
-      const postDate = filterData.map(
-        (data: any) =>
-          String(data.timestamp.toDate().getFullYear()) +
-          "-" +
-          String(("0" + (data.timestamp.toDate().getMonth() + 1)).slice(-2)) +
-          "-" +
-          String(("0" + data.timestamp.toDate().getDate()).slice(-2))
-      );
-      dispatch(
-        userOunwanCount(
-          postDate.filter((element: any, index: any) => {
-            return postDate.indexOf(element) === index;
-          })
-        )
-      );
-      const result: any = {};
-      postDate.forEach((x: any) => {
-        result[x] = (result[x] || 0) + 1;
-      });
-      dispatch(userPostData(result));
-    });
-  };
 
   let until = String(
     new Date().getFullYear() +

@@ -105,6 +105,9 @@ const Etc = styled.div`
   color: gray;
   cursor: pointer;
 `;
+const ErMsg = styled.span`
+  color: tomato;
+`;
 interface IForm {
   email: string;
   password: string;
@@ -117,10 +120,14 @@ function Login() {
     try {
       await signInWithEmailAndPassword(authService, data.email, data.password);
     } catch (error: any) {
-      setErrorFromSubmit(error.message);
+      if (error.message === "Firebase: Error (auth/user-not-found).") {
+        setErrorFromSubmit("존재하지 않는 아이디입니다.");
+      } else if (error.message === "Firebase: Error (auth/wrong-password).") {
+        setErrorFromSubmit("잘못된 비밀번호입니다.");
+      }
       setTimeout(() => {
         setErrorFromSubmit("");
-      }, 5000);
+      }, 7000);
     }
   };
   const onSosicalLogin = async (event: any) => {
@@ -162,6 +169,7 @@ function Login() {
           <input {...register("email")} type="email" />
           <label>비밀번호</label>
           <input {...register("password")} type="password" />
+          <ErMsg>{errorFromSubmit}</ErMsg>
           <button>로그인</button>
         </form>
         <div>

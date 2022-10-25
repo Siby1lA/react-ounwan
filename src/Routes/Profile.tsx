@@ -279,7 +279,10 @@ function Profile() {
       userId.push({ id: doc.id, ...doc.data() });
     });
     const filter = userId.filter((data) => data.uid === user?.uid);
-
+    if (data.nickname === "") {
+      alert("닉네임을 지정해주세요...");
+      return;
+    }
     if (imgPath) {
       //프로필 사진과 닉네임 변경시
       try {
